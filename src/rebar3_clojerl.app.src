@@ -1,4 +1,4 @@
-{application, 'clojerl-compiler',
+{application, 'rebar3_clojerl',
  [{description, "Compile clojerl projects"},
   {vsn, git},
   {registered, []},
