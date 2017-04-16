@@ -1,0 +1,15 @@
+{application, 'clojerl-compiler',
+ [{description, "Compile clojerl projects"},
+  {vsn, git},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
