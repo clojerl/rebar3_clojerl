@@ -26,7 +26,7 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  ok = clojerl:start(),
+  ok = ensure_clojerl(State),
   ok = lists:foreach(fun compile/1, rebar_state:project_apps(State)),
   {ok, State}.
 
@@ -37,6 +37,26 @@ format_error(Reason) ->
 %% =============================================================================
 %% Internal functions
 %% =============================================================================
+
+-spec ensure_clojerl(rebar_state:t()) -> ok.
+ensure_clojerl(State) ->
+  case find_dep(State, <<"clojerl">>) of
+    notfound ->
+      rebar_api:abort("Clojerl was not found as a dependency", []);
+    {ok, DepInfo} ->
+      EbinDir  = filename:join(rebar_app_info:out_dir(DepInfo), "ebin"),
+      true     = code:add_patha(EbinDir),
+      ok       = clojerl:start()
+  end.
+
+-spec find_dep(rebar_state:t(), binary()) -> notfound | {ok, any()}.
+find_dep(State, Name) ->
+  Deps  = rebar_state:all_deps(State),
+  Found = lists:filter(fun(Dep) -> Name =:= rebar_app_info:name(Dep) end, Deps),
+  case Found of
+    [] -> notfound;
+    [DepInfo] -> {ok, DepInfo}
+  end.
 
 -spec compile(any()) -> ok.
 compile(App) ->
