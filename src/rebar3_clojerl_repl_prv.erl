@@ -38,6 +38,20 @@ format_error(Reason) ->
 %% =============================================================================
 
 -spec repl(rebar_state:t()) -> ok.
-repl(_State) ->
-  'clojure.main':main([<<"-r">>]),
-  ok.
+repl(State) ->
+  EbinDir  = case rebar_state:project_apps(State) of
+               [] -> "ebin";
+               [App | _] ->
+                 filename:join(rebar_app_info:out_dir(App), "ebin")
+             end,
+
+  Bindings = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
+              , <<"#'clojure.core/*compile-files*">> => true
+              },
+
+  try
+    ok = 'clojerl.Var':push_bindings(Bindings),
+    'clojure.main':main([<<"-r">>])
+  after
+    ok = 'clojerl.Var':pop_bindings()
+  end.
