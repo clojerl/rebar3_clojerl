@@ -49,6 +49,9 @@ repl(State) ->
               , <<"#'clojure.core/*compile-files*">> => true
               },
 
+  DepsPaths = rebar_state:code_paths(State, all_deps),
+  code:add_pathsa(DepsPaths),
+
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
     'clojure.main':main([<<"-r">>])
