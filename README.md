@@ -1,4 +1,4 @@
-clojerl-compiler
+rebar3_clojerl
 =====
 
 Compile clojerl projects
@@ -13,14 +13,22 @@ Use
 
 Add the plugin to your rebar config:
 
-    {plugins, [
-        { clojerl-compiler, ".*", {git, "git@host:user/clojerl-compiler.git", {tag, "0.1.0"}}}
-    ]}.
+    { plugins
+    , [ {rebar3_clojerl, ".*", {git, "https://github.com/clojerl/rebar3_clojerl", {tag, "0.1.0"}}}
+      ]
+    }.
 
-Then just call your plugin directly in an existing application:
+Then just call the plugin directly in an existing application:
 
+    $ rebar3 clojerl compile
+    ===> Fetching rebar3_clojerl
+    ===> Compiling rebar3_clojerl
 
-    $ rebar3 clojerl-compiler
-    ===> Fetching clojerl-compiler
-    ===> Compiling clojerl-compiler
-    <Plugin Output>
+To get a list of all available tasks for the plugin run:
+
+    $ rebar3 help clojerl
+    ===> Compiling rebar3_clojerl
+
+    clojerl <task>:
+      compile        Compile clojerl project
+      repl           Start a clojerl repl
