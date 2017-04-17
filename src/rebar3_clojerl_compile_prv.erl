@@ -62,7 +62,7 @@ find_dep(State, Name) ->
 compile(App) ->
   SrcDir   = filename:join(rebar_app_info:dir(App), "src"),
   Files    = find_files(SrcDir),
-
+  true     = code:add_patha(SrcDir),
   EbinDir  = filename:join(rebar_app_info:out_dir(App), "ebin"),
   Bindings = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
               , <<"#'clojure.core/*compile-files*">> => true
