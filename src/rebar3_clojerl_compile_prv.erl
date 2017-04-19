@@ -71,6 +71,11 @@ compile(App) ->
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
     clj_compiler:compile_files(Files)
+  catch
+    _:Reason when is_binary(Reason) ->
+      rebar_api:error("~s", [Reason]);
+    _:Reason ->
+      rebar_api:error("~p", [Reason])
   after
     ok = 'clojerl.Var':pop_bindings()
   end.
