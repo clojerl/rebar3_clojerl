@@ -32,7 +32,7 @@ do(State) ->
 
 -spec format_error(any()) ->  iolist().
 format_error(Reason) ->
-  io_lib:format("~p", [Reason]).
+  io_lib:format("~p ~p", [Reason, erlang:get_stacktrace()]).
 
 %% =============================================================================
 %% Internal functions
@@ -63,19 +63,18 @@ compile(App) ->
   SrcDir   = filename:join(rebar_app_info:dir(App), "src"),
   Files    = find_files(SrcDir),
   true     = code:add_patha(SrcDir),
-  EbinDir  = filename:join(rebar_app_info:out_dir(App), "ebin"),
+  EbinDir  = filename:join(rebar_app_info:out_dir(App), <<"ebin">>),
   Bindings = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
               , <<"#'clojure.core/*compile-files*">> => true
               },
-
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
     clj_compiler:compile_files(Files)
   catch
     _:Reason when is_binary(Reason) ->
-      rebar_api:error("~s", [Reason]);
+      rebar_api:error("~s~n~p", [Reason, erlang:get_stacktrace()]);
     _:Reason ->
-      rebar_api:error("~p", [Reason])
+      rebar_api:error("~p~n~p", [Reason, erlang:get_stacktrace()])
   after
     ok = 'clojerl.Var':pop_bindings()
   end.

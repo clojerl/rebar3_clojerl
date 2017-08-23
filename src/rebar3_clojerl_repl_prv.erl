@@ -39,15 +39,7 @@ format_error(Reason) ->
 
 -spec repl(rebar_state:t()) -> ok.
 repl(State) ->
-  EbinDir  = case rebar_state:project_apps(State) of
-               [] -> "ebin";
-               [App | _] ->
-                 filename:join(rebar_app_info:out_dir(App), "ebin")
-             end,
-
-  Bindings = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
-              , <<"#'clojure.core/*compile-files*">> => true
-              },
+  Bindings = #{<<"#'clojure.core/*compile-files*">> => false},
 
   DepsPaths = rebar_state:code_paths(State, all_deps),
   code:add_pathsa(DepsPaths),
