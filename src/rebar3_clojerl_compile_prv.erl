@@ -76,7 +76,7 @@ is_not_dep_name_fun(Name) ->
 
 -spec compile(rebar_app_info:t()) -> ok.
 compile(AppInfo) ->
-  rebar_api:info("Compiling Clojerl ~s", [rebar_app_info:name(AppInfo)]),
+  rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
   BaseDir      = rebar_app_info:out_dir(AppInfo),
   RebarOpts    = rebar_app_info:opts(AppInfo),
   CljeSrcDirs  = rebar_opts:get(RebarOpts, clje_src_dirs, ?DEFAULT_SRC_DIRS),
@@ -95,8 +95,9 @@ compile_dir(BaseDir, Dir, OutDir, Config) ->
   SrcDir   = filename:join(BaseDir, Dir),
   SrcFiles = find_files(SrcDir),
 
-  rebar_api:debug("Source Dir ~p", [SrcDir]),
+  rebar_api:debug("Source Dir ~s", [SrcDir]),
   rebar_api:debug("Source Files ~p", [SrcFiles]),
+  rebar_api:debug("Out Dir ~s", [OutDir]),
 
   %% TODO: ensure dir
   true     = code:add_patha(SrcDir),
@@ -106,8 +107,6 @@ compile_dir(BaseDir, Dir, OutDir, Config) ->
 
 compile_file(Source, SrcDir, OutDir, Config) ->
   Target = target_file(Source, SrcDir, OutDir),
-  rebar_api:debug("Source ~s", [Source]),
-  rebar_api:debug("Target ~s", [Target]),
   case check_last_modified(Target, Source) of
     true  -> compile_clje(Source, Config);
     false -> skipped
@@ -115,7 +114,7 @@ compile_file(Source, SrcDir, OutDir, Config) ->
 
 -spec compile_clje(filename(), [any()]) -> ok.
 compile_clje(Source, Config) ->
-  rebar_api:info("Compiling ~s...", [Source]),
+  rebar_api:debug("Compiling ~s...", [Source]),
 
   EbinDir   = proplists:get_value(out_dir, Config),
   Bindings  = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
