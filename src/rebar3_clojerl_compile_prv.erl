@@ -5,6 +5,9 @@
 -define(PROVIDER, compile).
 -define(NAMESPACE, clojerl).
 -define(DEPS, [{default, app_discovery}, {default, compile}]).
+-define(DEFAULT_SRC_DIRS, ["src"]).
+
+-type filename() :: filename:filename_all().
 
 %% =============================================================================
 %% Public API
@@ -26,8 +29,9 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  ok = ensure_clojerl(State),
-  ok = lists:foreach(fun compile/1, rebar_state:project_apps(State)),
+  ok   = ensure_clojerl(State),
+  Apps = lists:filter(is_not_dep_name_fun(<<"clojerl">>), all_apps(State)),
+  [compile(AppInfo) || AppInfo <- Apps],
   {ok, State}.
 
 -spec format_error(any()) ->  iolist().
@@ -37,6 +41,10 @@ format_error(Reason) ->
 %% =============================================================================
 %% Internal functions
 %% =============================================================================
+
+-spec all_apps(rebar_state:t()) -> [rebar_app_info:t()].
+all_apps(State) ->
+  lists:usort(rebar_state:all_deps(State)) ++ rebar_state:project_apps(State).
 
 -spec ensure_clojerl(rebar_state:t()) -> ok.
 ensure_clojerl(State) ->
@@ -52,24 +60,69 @@ ensure_clojerl(State) ->
 -spec find_dep(rebar_state:t(), binary()) -> notfound | {ok, any()}.
 find_dep(State, Name) ->
   Deps  = rebar_state:all_deps(State),
-  Found = lists:filter(fun(Dep) -> Name =:= rebar_app_info:name(Dep) end, Deps),
-  case Found of
+  case lists:filter(is_dep_name_fun(Name), Deps) of
     [] -> notfound;
     [DepInfo] -> {ok, DepInfo}
   end.
 
--spec compile(any()) -> ok.
-compile(App) ->
-  SrcDir   = filename:join(rebar_app_info:dir(App), "src"),
-  Files    = find_files(SrcDir),
+-spec is_dep_name_fun(binary()) -> boolean().
+is_dep_name_fun(Name) ->
+  fun(Dep) -> Name =:= rebar_app_info:name(Dep) end.
+
+-spec is_not_dep_name_fun(binary()) -> boolean().
+is_not_dep_name_fun(Name) ->
+  IsDepName = is_dep_name_fun(Name),
+  fun(Dep) -> not IsDepName(Dep) end.
+
+-spec compile(rebar_app_info:t()) -> ok.
+compile(AppInfo) ->
+  rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
+  BaseDir      = rebar_app_info:out_dir(AppInfo),
+  RebarOpts    = rebar_app_info:opts(AppInfo),
+  CljeSrcDirs  = rebar_opts:get(RebarOpts, clje_src_dirs, ?DEFAULT_SRC_DIRS),
+
+  OutDir       = filename:join(BaseDir, <<"ebin">>),
+  Config       = [{out_dir, OutDir}],
+  %% TODO: ensure dir
+  ok           = code:add_pathsa([OutDir]),
+
+  [compile_dir(BaseDir, SrcDir, OutDir, Config) || SrcDir <- CljeSrcDirs],
+
+  ok.
+
+-spec compile_dir(filename(), string(), filename(), [any()]) -> ok.
+compile_dir(BaseDir, Dir, OutDir, Config) ->
+  SrcDir   = filename:join(BaseDir, Dir),
+  SrcFiles = find_files(SrcDir),
+
+  rebar_api:debug("Source Dir ~s", [SrcDir]),
+  rebar_api:debug("Source Files ~p", [SrcFiles]),
+  rebar_api:debug("Out Dir ~s", [OutDir]),
+
+  %% TODO: ensure dir
   true     = code:add_patha(SrcDir),
-  EbinDir  = filename:join(rebar_app_info:out_dir(App), <<"ebin">>),
-  Bindings = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
-              , <<"#'clojure.core/*compile-files*">> => true
-              },
+
+  [compile_file(Src, SrcDir, OutDir, Config) || Src <- SrcFiles],
+  ok.
+
+compile_file(Source, SrcDir, OutDir, Config) ->
+  Target = target_file(Source, SrcDir, OutDir),
+  case check_last_modified(Target, Source) of
+    true  -> compile_clje(Source, Config);
+    false -> skipped
+  end.
+
+-spec compile_clje(filename(), [any()]) -> ok.
+compile_clje(Source, Config) ->
+  rebar_api:debug("Compiling ~s...", [Source]),
+
+  EbinDir   = proplists:get_value(out_dir, Config),
+  Bindings  = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
+               , <<"#'clojure.core/*compile-files*">> => true
+               },
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
-    clj_compiler:compile_files(Files)
+    clj_compiler:compile_file(list_to_binary(Source))
   catch
     _:Reason when is_binary(Reason) ->
       rebar_api:error("~s~n~p", [Reason, erlang:get_stacktrace()]);
@@ -79,7 +132,20 @@ compile(App) ->
     ok = 'clojerl.Var':pop_bindings()
   end.
 
--spec find_files(string()) -> [string()].
+-spec find_files(filename()) -> [filename()].
 find_files(Path) ->
-  Pattern = filename:join(Path, "**/*.clj[ec]"),
-  [list_to_binary(F) || F <- filelib:wildcard(Pattern)].
+  ExtRegex = "clj[ce]",
+  rebar_utils:find_files(Path, ExtRegex, true).
+
+-spec target_file(filename(), filename(), filename()) -> filename().
+target_file(Source, SrcDir, OutDir) ->
+  Target1   = re:replace(Source, ["^", SrcDir, "/"], "", [global]),
+  Target2   = re:replace(Target1, "/", ".", [global, {return, binary}]),
+  Target3   = re:replace(Target2, "_", "-", [global, {return, binary}]),
+  Target4   = filename:basename(Target3, filename:extension(Source)),
+  Target5   = [OutDir, "/", Target4, ".beam"],
+  iolist_to_binary(Target5).
+
+-spec check_last_modified(filename(), filename()) -> boolean().
+check_last_modified(Target, Source) ->
+  filelib:last_modified(Target) < filelib:last_modified(Source).
