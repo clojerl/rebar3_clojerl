@@ -1,4 +1,4 @@
--module(rebar3_clojerl_repl_prv).
+-module(rebar3_clojerl_prv_repl).
 
 -export([init/1, do/1, format_error/1]).
 
@@ -6,19 +6,29 @@
 -define(NAMESPACE, clojerl).
 -define(DEPS, [compile]).
 
+-type opts() :: [{atom(), any()}].
+
 %% =============================================================================
 %% Public API
 %% =============================================================================
 
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
+  Opts     = [ { apps, undefined, "apps", string
+               , "List of applications that should be started "
+                 "separated by commas (e.g. --apps app1,app2,app3)."
+               }
+             , { sname, undefined, "sname", string
+               , "Erlang node name."
+               }
+             ],
   Provider = providers:create([ {namespace,  ?NAMESPACE}
                               , {name,       ?PROVIDER}
                               , {module,     ?MODULE}
                               , {bare,       true}
                               , {deps,       ?DEPS}
                               , {example,    "rebar3 clojerl repl"}
-                              , {opts,       []}
+                              , {opts,       Opts}
                               , {short_desc, "Start a clojerl repl"}
                               , {desc,       "Start a clojerl repl"}
                               ]),
@@ -39,14 +49,38 @@ format_error(Reason) ->
 
 -spec repl(rebar_state:t()) -> ok.
 repl(State) ->
-  Bindings = #{<<"#'clojure.core/*compile-files*">> => false},
+  Bindings  = #{<<"#'clojure.core/*compile-files*">> => false},
 
   DepsPaths = rebar_state:code_paths(State, all_deps),
   code:add_pathsa(DepsPaths),
+
+  {Opts, _} = rebar_state:command_parsed_args(State),
+  ok  = maybe_start_apps(Opts),
+  ok  = maybe_set_sname(Opts),
 
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
     'clojure.main':main([<<"-r">>])
   after
     ok = 'clojerl.Var':pop_bindings()
+  end.
+
+-spec maybe_start_apps(opts()) -> ok.
+maybe_start_apps(Opts) ->
+  case proplists:get_value(apps, Opts, undefined) of
+    undefined -> ok;
+    AppsStr ->
+      Apps = [list_to_atom(X) || X <- string:tokens(AppsStr, ",")],
+      [application:ensure_all_started(Name) || Name <- Apps],
+      ok
+  end.
+
+-spec maybe_set_sname(opts()) -> ok.
+maybe_set_sname(Opts) ->
+  case proplists:get_value(sname, Opts, undefined) of
+    undefined -> ok;
+    SNameStr ->
+      SName   = list_to_atom(SNameStr),
+      {ok, _} = net_kernel:start([SName, shortnames]),
+      ok
   end.
