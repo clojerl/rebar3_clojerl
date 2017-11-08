@@ -1,4 +1,4 @@
--module(rebar3_clojerl_compile_prv).
+-module(rebar3_clojerl_prv_compile).
 
 -export([init/1, do/1, format_error/1]).
 
