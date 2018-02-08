@@ -124,10 +124,12 @@ compile_clje(Source, Config) ->
     ok = 'clojerl.Var':push_bindings(Bindings),
     clj_compiler:compile_file(list_to_binary(Source))
   catch
-    _:Reason when is_binary(Reason) ->
-      rebar_api:error("~s~n~p", [Reason, erlang:get_stacktrace()]);
     _:Reason ->
-      rebar_api:error("~p~n~p", [Reason, erlang:get_stacktrace()])
+      rebar_api:error("~s", [clj_rt:str(Reason)]),
+      Stacktrace = erlang:get_stacktrace(),
+      rebar_api:debug( "Stacktrace:~n~s"
+                     , [rebar3_clojerl_utils:stacktrace(Stacktrace)]
+                     )
   after
     ok = 'clojerl.Var':pop_bindings()
   end.
