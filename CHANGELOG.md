@@ -1,7 +1,14 @@
 # Change Log
 
-## [0.2.0](https://github.com/clojerl/rebar3_clojerl/tree/0.2.0)
+## [0.2.1](https://github.com/clojerl/rebar3_clojerl/tree/0.2.1)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.0...0.2.1)
+
+**Merged pull requests:**
+
+- \[\#15\] Only print stacktrace when debugging [\#16](https://github.com/clojerl/rebar3_clojerl/pull/16) ([jfacorro](https://github.com/jfacorro))
+
+## [0.2.0](https://github.com/clojerl/rebar3_clojerl/tree/0.2.0) (2017-12-09)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.1.0...0.2.0)
 
 **Implemented enhancements:**
