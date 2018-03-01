@@ -128,7 +128,7 @@ compile_clje(Source, Config) ->
       rebar_api:error("~s", [clj_rt:str(Reason)]),
       Stacktrace = erlang:get_stacktrace(),
       rebar_api:debug( "Stacktrace:~n~s"
-                     , [rebar3_clojerl_utils:stacktrace(Stacktrace)]
+                     , [clj_utils:stacktrace(Stacktrace)]
                      )
   after
     ok = 'clojerl.Var':pop_bindings()
