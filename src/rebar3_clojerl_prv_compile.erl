@@ -29,9 +29,10 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  ok   = ensure_clojerl(State),
-  Apps = lists:filter(is_not_dep_name_fun(<<"clojerl">>), all_apps(State)),
-  [compile(AppInfo) || AppInfo <- Apps],
+  ok     = ensure_clojerl(State),
+  Apps   = lists:filter(is_not_dep_name_fun(<<"clojerl">>), all_apps(State)),
+  Config = [{protocols_out_dir, protocols_out_dir(State)}],
+  [compile(AppInfo, Config) || AppInfo <- Apps],
   {ok, State}.
 
 -spec format_error(any()) ->  iolist().
@@ -45,6 +46,15 @@ format_error(Reason) ->
 -spec all_apps(rebar_state:t()) -> [rebar_app_info:t()].
 all_apps(State) ->
   lists:usort(rebar_state:all_deps(State)) ++ rebar_state:project_apps(State).
+
+-spec protocols_out_dir(rebar_state:t()) -> filename().
+protocols_out_dir(State) ->
+  %% Get the first application from this project.
+  [AppInfo | _] = rebar_state:project_apps(State),
+  BaseDir       = rebar_app_info:out_dir(AppInfo),
+  ProtoDir      = filename:join(BaseDir, <<"ebin">>),
+  rebar_api:debug("Protocols Dir ~s", [ProtoDir]),
+  ProtoDir.
 
 -spec ensure_clojerl(rebar_state:t()) -> ok.
 ensure_clojerl(State) ->
@@ -74,19 +84,19 @@ is_not_dep_name_fun(Name) ->
   IsDepName = is_dep_name_fun(Name),
   fun(Dep) -> not IsDepName(Dep) end.
 
--spec compile(rebar_app_info:t()) -> ok.
-compile(AppInfo) ->
+-spec compile(rebar_app_info:t(), [any()]) -> ok.
+compile(AppInfo, Config0) ->
   rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
   BaseDir      = rebar_app_info:out_dir(AppInfo),
   RebarOpts    = rebar_app_info:opts(AppInfo),
   CljeSrcDirs  = rebar_opts:get(RebarOpts, clje_src_dirs, ?DEFAULT_SRC_DIRS),
 
   OutDir       = filename:join(BaseDir, <<"ebin">>),
-  Config       = [{out_dir, OutDir}],
+  Config1      = [{out_dir, OutDir} | Config0],
   %% TODO: ensure dir
   ok           = code:add_pathsa([OutDir]),
 
-  [compile_dir(BaseDir, SrcDir, OutDir, Config) || SrcDir <- CljeSrcDirs],
+  [compile_dir(BaseDir, SrcDir, OutDir, Config1) || SrcDir <- CljeSrcDirs],
 
   ok.
 
@@ -105,6 +115,7 @@ compile_dir(BaseDir, Dir, OutDir, Config) ->
   [compile_file(Src, SrcDir, OutDir, Config) || Src <- SrcFiles],
   ok.
 
+-spec compile_file(filename(), filename(), filename(), [any()]) -> ok | skipped.
 compile_file(Source, SrcDir, OutDir, Config) ->
   Target = target_file(Source, SrcDir, OutDir),
   case check_last_modified(Target, Source) of
@@ -117,8 +128,10 @@ compile_clje(Source, Config) ->
   rebar_api:debug("Compiling ~s...", [Source]),
 
   EbinDir   = proplists:get_value(out_dir, Config),
-  Bindings  = #{ <<"#'clojure.core/*compile-path*">>  => EbinDir
-               , <<"#'clojure.core/*compile-files*">> => true
+  ProtoDir  = proplists:get_value(protocols_out_dir, Config),
+  Bindings  = #{ <<"#'clojure.core/*compile-files*">>          => true
+               , <<"#'clojure.core/*compile-path*">>           => EbinDir
+               , <<"#'clojure.core/*compile-protocols-path*">> => ProtoDir
                },
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
