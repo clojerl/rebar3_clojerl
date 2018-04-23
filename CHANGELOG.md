@@ -1,7 +1,18 @@
 # Change Log
 
-## [0.2.2](https://github.com/clojerl/rebar3_clojerl/tree/0.2.2)
+## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.2...0.3.0)
+
+**Closed issues:**
+
+- Define \*compile-protocols-path\* in order to handle latest changes [\#18](https://github.com/clojerl/rebar3_clojerl/issues/18)
+
+**Merged pull requests:**
+
+- \[Closes \#18\] Define \*compile-protocols-path\* as the current project's ebin directory [\#19](https://github.com/clojerl/rebar3_clojerl/pull/19) ([jfacorro](https://github.com/jfacorro))
+
+## [0.2.2](https://github.com/clojerl/rebar3_clojerl/tree/0.2.2) (2018-03-04)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.1...0.2.2)
 
 **Implemented enhancements:**
