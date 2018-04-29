@@ -29,10 +29,12 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  ok     = ensure_clojerl(State),
-  Apps   = lists:filter(is_not_dep_name_fun(?CLOJERL), all_apps(State)),
-  Config = [{protocols_out_dir, protocols_out_dir(State)}],
+  ok      = ensure_clojerl(State),
+  AllApps = all_apps(State),
+  Apps    = lists:filter(is_not_dep_name_fun(?CLOJERL), AllApps),
+  Config  = [{protocols_out_dir, protocols_out_dir(State)}],
   [compile(AppInfo, Config) || AppInfo <- Apps],
+  clean_duplicates(AllApps, Config),
   {ok, State}.
 
 -spec format_error(any()) -> iolist().
@@ -53,7 +55,30 @@ protocols_out_dir(State) ->
   [AppInfo | _] = rebar_state:project_apps(State),
   ProtoDir      = rebar_app_info:ebin_dir(AppInfo),
   rebar_api:debug("Protocols dir: ~s", [ProtoDir]),
-  list_to_binary(ProtoDir).
+  ProtoDir.
+
+-spec clean_duplicates([rebar_app_info:t()], [any()]) -> ok.
+clean_duplicates(Apps, Config) ->
+  ProtoDir      = proplists:get_value(protocols_out_dir, Config),
+  rebar_api:info( "Protocols dir: ~p", [ProtoDir]),
+  BeamFilepaths = rebar_utils:find_files(ProtoDir, ".beam$"),
+  BeamFilenames = [filename:basename(F) || F <- BeamFilepaths],
+
+  rebar_api:info( "Finding duplicates for:~n~p", [BeamFilenames]),
+
+  Dirs = [rebar_app_info:ebin_dir(App) || App <- Apps] -- [ProtoDir],
+  rebar_api:info( "Searching duplicates in:~n~p", [Dirs]),
+  [clean_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
+  ok.
+
+clean_duplicates_from_dir(BeamFilenames, Dir) ->
+  [ begin
+      ok = file:delete(F),
+      rebar_api:info("Deleted duplicate ~s", [F])
+    end
+    || F <- rebar_utils:find_files(Dir, ".beam$"),
+       lists:member(filename:basename(F), BeamFilenames)
+  ].
 
 -spec ensure_clojerl(rebar_state:t()) -> ok.
 ensure_clojerl(State) ->
@@ -87,7 +112,7 @@ is_not_dep_name_fun(Name) ->
 -spec compile(rebar_app_info:t(), [any()]) -> ok.
 compile(AppInfo, Config0) ->
   rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
-  BaseDir      = rebar_app_info:out_dir(AppInfo),
+  OutDir       = rebar_app_info:out_dir(AppInfo),
   EbinDir      = rebar_app_info:ebin_dir(AppInfo),
   RebarOpts    = rebar_app_info:opts(AppInfo),
   CljeSrcDirs  = rebar_opts:get(RebarOpts, clje_src_dirs, ?DEFAULT_SRC_DIRS),
@@ -96,16 +121,16 @@ compile(AppInfo, Config0) ->
   %% TODO: ensure dir
   ok           = code:add_pathsa([EbinDir]),
 
-  Config1      = [{out_dir, list_to_binary(EbinDir)} | Config0],
+  Config1      = [{out_dir, EbinDir} | Config0],
 
-  [compile_dir(BaseDir, SrcDir, EbinDir, Config1) || SrcDir <- CljeSrcDirs],
+  [compile_dir(OutDir, SrcDir, EbinDir, Config1) || SrcDir <- CljeSrcDirs],
 
   ok.
 
 -spec compile_dir(file:name(), string(), file:name(), [any()]) -> ok.
-compile_dir(BaseDir, Dir, EbinDir, Config) ->
-  SrcDir   = filename:join(BaseDir, Dir),
-  SrcFiles = find_files(SrcDir),
+compile_dir(OutDir, Dir, EbinDir, Config) ->
+  SrcDir   = filename:join(OutDir, Dir),
+  SrcFiles = rebar_utils:find_files(SrcDir, "clj[ce]"),
 
   rebar_api:debug("Source Dir ~s", [SrcDir]),
   rebar_api:debug("Source Files ~p", [SrcFiles]),
@@ -130,8 +155,8 @@ compile_file(Source, SrcDir, EbinDir, Config) ->
 compile_clje(Source, Config) ->
   rebar_api:debug("Compiling ~s...", [Source]),
 
-  EbinDir   = proplists:get_value(out_dir, Config),
-  ProtoDir  = proplists:get_value(protocols_out_dir, Config),
+  EbinDir   = list_to_binary(proplists:get_value(out_dir, Config)),
+  ProtoDir  = list_to_binary(proplists:get_value(protocols_out_dir, Config)),
   Bindings  = #{ <<"#'clojure.core/*compile-files*">>          => true
                , <<"#'clojure.core/*compile-path*">>           => EbinDir
                , <<"#'clojure.core/*compile-protocols-path*">> => ProtoDir
@@ -152,19 +177,13 @@ compile_clje(Source, Config) ->
     ok = 'clojerl.Var':pop_bindings()
   end.
 
--spec find_files(file:name()) -> [file:name()].
-find_files(Path) ->
-  ExtRegex = "clj[ce]",
-  rebar_utils:find_files(Path, ExtRegex, true).
-
 -spec target_file(file:name(), file:name(), file:name()) -> file:name().
-target_file(Source, SrcDir, OutDir) ->
-  Target1   = re:replace(Source, ["^", SrcDir, "/"], "", [global]),
-  Target2   = re:replace(Target1, "/", ".", [global, {return, binary}]),
-  Target3   = re:replace(Target2, "_", "-", [global, {return, binary}]),
-  Target4   = filename:basename(Target3, filename:extension(Source)),
-  Target5   = [OutDir, "/", Target4, ".beam"],
-  iolist_to_binary(Target5).
+target_file(Src, SrcDir, OutDir) ->
+  Target1 = re:replace(Src, ["^", SrcDir, "/"], "", [global, {return, binary}]),
+  Target2 = clj_utils:resource_to_ns(Target1),
+  Target3 = filename:basename(Target2, filename:extension(Src)),
+  Target4 = [OutDir, "/", Target3, ".beam"],
+  iolist_to_binary(Target4).
 
 -spec should_compile(file:name(), file:name()) -> boolean().
 should_compile(Target, Source) ->
