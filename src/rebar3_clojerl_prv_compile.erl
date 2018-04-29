@@ -4,7 +4,7 @@
 
 -define(PROVIDER, compile).
 -define(NAMESPACE, clojerl).
--define(DEPS, [{default, app_discovery}, {default, compile}]).
+-define(DEPS, [{default, compile}]).
 -define(DEFAULT_SRC_DIRS, ["src"]).
 
 -define(CLOJERL, <<"clojerl">>).
@@ -60,25 +60,55 @@ protocols_out_dir(State) ->
 -spec clean_duplicates([rebar_app_info:t()], [any()]) -> ok.
 clean_duplicates(Apps, Config) ->
   ProtoDir      = proplists:get_value(protocols_out_dir, Config),
-  rebar_api:info( "Protocols dir: ~p", [ProtoDir]),
   BeamFilepaths = rebar_utils:find_files(ProtoDir, ".beam$"),
   BeamFilenames = [filename:basename(F) || F <- BeamFilepaths],
 
-  rebar_api:info( "Finding duplicates for:~n~p", [BeamFilenames]),
+  rebar_api:debug( "Finding duplicates for:~n~p", [BeamFilenames]),
 
-  Dirs = [rebar_app_info:ebin_dir(App) || App <- Apps] -- [ProtoDir],
-  rebar_api:info( "Searching duplicates in:~n~p", [Dirs]),
-  [clean_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
-  ok.
+  Dirs    = [rebar_app_info:ebin_dir(App) || App <- Apps] -- [ProtoDir],
+  rebar_api:debug( "Searching duplicates in:~n~p", [Dirs]),
+  Deleted = [clean_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
 
+  ok      = lists:foreach(fun update_app_file/1, Deleted).
+
+-spec clean_duplicates_from_dir([file:name()], file:name()) ->
+  {file:name(), [file:name()]}.
 clean_duplicates_from_dir(BeamFilenames, Dir) ->
-  [ begin
-      ok = file:delete(F),
-      rebar_api:info("Deleted duplicate ~s", [F])
-    end
-    || F <- rebar_utils:find_files(Dir, ".beam$"),
-       lists:member(filename:basename(F), BeamFilenames)
-  ].
+  Filepaths = [ begin
+                  rebar_api:debug("Deleted duplicate ~s", [F]),
+                  ok = file:delete(F),
+                  F
+                end
+                || F <- rebar_utils:find_files(Dir, ".beam$"),
+                   lists:member(filename:basename(F), BeamFilenames)
+              ],
+  {Dir, Filepaths}.
+
+-spec update_app_file({file:name(), [file:name()]}) -> ok.
+update_app_file({_Dir, []}) ->
+  ok;
+update_app_file({Dir, Filepaths}) ->
+  case rebar_utils:find_files(Dir, ".app$", false) of
+    [AppFile] ->
+      DeletedModules = [ list_to_atom(filename:basename(Path, ".beam"))
+                         || Path <- Filepaths
+                       ],
+      {ok, [{application, AppName, AppDetail0}]} = file:consult(AppFile),
+      rebar_api:debug("Updating app file for ~p", [AppName]),
+      rebar_api:debug("Removing modules:~n~p", [DeletedModules]),
+      AppModules0 = proplists:get_value(modules, AppDetail0, []),
+      AppModules1 = AppModules0 -- DeletedModules,
+
+      AppDetail1  = lists:keyreplace( modules
+                                    , 1
+                                    , AppDetail0
+                                    , {modules, AppModules1}
+                                    ),
+      Spec = io_lib:format("~p.\n", [{application, AppName, AppDetail1}]),
+      ok = rebar_file_utils:write_file_if_contents_differ(AppFile, Spec, utf8),
+      ok;
+    [] -> ok
+  end.
 
 -spec ensure_clojerl(rebar_state:t()) -> ok.
 ensure_clojerl(State) ->
