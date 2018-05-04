@@ -29,10 +29,15 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  ok      = ensure_clojerl(State),
-  AllApps = all_apps(State),
-  Apps    = lists:filter(is_not_dep_name_fun(?CLOJERL), AllApps),
-  Config  = [{protocols_out_dir, protocols_out_dir(State)}],
+  DepsPaths = rebar_state:code_paths(State, all_deps),
+  ok        = code:add_pathsa(DepsPaths),
+
+  ok        = ensure_clojerl(State),
+
+  AllApps   = all_apps(State),
+  Apps      = lists:filter(is_not_dep_name_fun(?CLOJERL), AllApps),
+  Config    = [{protocols_out_dir, protocols_out_dir(State)}],
+
   [compile(AppInfo, Config) || AppInfo <- Apps],
   clean_duplicates(AllApps, Config),
   {ok, State}.
@@ -115,11 +120,8 @@ ensure_clojerl(State) ->
   case find_dep(State, ?CLOJERL) of
     notfound ->
       rebar_api:abort("Clojerl was not found as a dependency", []);
-    {ok, DepInfo} ->
-      EbinDir  = rebar_app_info:ebin_dir(DepInfo),
-      rebar_api:debug("Add Clojerl path: ~s", [EbinDir]),
-      true     = code:add_pathz(EbinDir),
-      ok       = clojerl:start()
+    {ok, _} ->
+      ok = clojerl:start()
   end.
 
 -spec find_dep(rebar_state:t(), binary()) -> notfound | {ok, any()}.
@@ -139,46 +141,17 @@ is_not_dep_name_fun(Name) ->
   IsDepName = is_dep_name_fun(Name),
   fun(Dep) -> not IsDepName(Dep) end.
 
--spec compile(rebar_app_info:t(), [any()]) -> ok.
+-spec compile(rebar_app_info:t(), [any()]) -> boolean().
 compile(AppInfo, Config0) ->
-  rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
-  OutDir       = rebar_app_info:out_dir(AppInfo),
-  EbinDir      = rebar_app_info:ebin_dir(AppInfo),
-  RebarOpts    = rebar_app_info:opts(AppInfo),
-  CljeSrcDirs  = rebar_opts:get(RebarOpts, clje_src_dirs, ?DEFAULT_SRC_DIRS),
-
-  rebar_api:debug("Add path: ~s", [EbinDir]),
-  %% TODO: ensure dir
-  ok           = code:add_pathsa([EbinDir]),
-
-  Config1      = [{out_dir, EbinDir} | Config0],
-
-  [compile_dir(OutDir, SrcDir, EbinDir, Config1) || SrcDir <- CljeSrcDirs],
-
-  ok.
-
--spec compile_dir(file:name(), string(), file:name(), [any()]) -> ok.
-compile_dir(OutDir, Dir, EbinDir, Config) ->
-  SrcDir   = filename:join(OutDir, Dir),
-  SrcFiles = rebar_utils:find_files(SrcDir, "clj[ce]"),
-
-  rebar_api:debug("Source Dir ~s", [SrcDir]),
-  rebar_api:debug("Source Files ~p", [SrcFiles]),
-  rebar_api:debug("Ebin Dir ~s", [EbinDir]),
-
-  %% TODO: ensure dir
-  true     = code:add_patha(SrcDir),
-
-  [compile_file(Src, SrcDir, EbinDir, Config) || Src <- SrcFiles],
-  ok.
-
--spec compile_file(file:name(), file:name(), file:name(), [any()]) ->
-  ok | skipped.
-compile_file(Source, SrcDir, EbinDir, Config) ->
-  Target = target_file(Source, SrcDir, EbinDir),
-  case should_compile(Target, Source) of
-    true  -> compile_clje(Source, Config);
-    false -> skipped
+  case find_files_to_compile(AppInfo) of
+    [] ->
+      false;
+    SrcFiles ->
+      rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
+      EbinDir      = rebar_app_info:ebin_dir(AppInfo),
+      Config1      = [{out_dir, EbinDir} | Config0],
+      [compile_clje(Src, Config1) || Src <- SrcFiles],
+      true
   end.
 
 -spec compile_clje(file:name(), [any()]) -> ok.
@@ -206,6 +179,30 @@ compile_clje(Source, Config) ->
   after
     ok = 'clojerl.Var':pop_bindings()
   end.
+
+%% =============================================================================
+%% Find files to compile
+
+-spec find_files_to_compile(rebar_app_info:t()) -> [file:name()].
+find_files_to_compile(AppInfo) ->
+  OutDir      = rebar_app_info:out_dir(AppInfo),
+  EbinDir     = rebar_app_info:ebin_dir(AppInfo),
+  CljeSrcDirs = rebar_app_info:get(AppInfo, clje_src_dirs, ?DEFAULT_SRC_DIRS),
+
+  SrcDirPaths = [filename:join(OutDir, Dir) || Dir <- CljeSrcDirs],
+  ok          = code:add_pathsa(SrcDirPaths),
+  Fun         = fun(SrcDir) -> find_files_to_compile(SrcDir, EbinDir) end,
+  lists:usort(lists:flatmap(Fun, SrcDirPaths)).
+
+-spec find_files_to_compile(file:name(), file:name()) -> ok.
+find_files_to_compile(SrcDir, EbinDir) ->
+  SrcFiles = rebar_utils:find_files(SrcDir, "clj[ce]"),
+  [Source || Source <- SrcFiles, should_compile_file(Source, SrcDir, EbinDir)].
+
+-spec should_compile_file(file:name(), file:name(), file:name()) -> boolean().
+should_compile_file(Source, SrcDir, EbinDir) ->
+  Target = target_file(Source, SrcDir, EbinDir),
+  should_compile(Target, Source).
 
 -spec target_file(file:name(), file:name(), file:name()) -> file:name().
 target_file(Src, SrcDir, OutDir) ->
