@@ -38,8 +38,9 @@ do(State) ->
   Apps      = lists:filter(is_not_dep_name_fun(?CLOJERL), AllApps),
   Config    = [{protocols_out_dir, protocols_out_dir(State)}],
 
+  restore_duplicates(AllApps),
   [compile(AppInfo, Config) || AppInfo <- Apps],
-  clean_duplicates(AllApps, Config),
+  backup_duplicates(AllApps, Config),
   {ok, State}.
 
 -spec format_error(any()) -> iolist().
@@ -62,8 +63,8 @@ protocols_out_dir(State) ->
   rebar_api:debug("Protocols dir: ~s", [ProtoDir]),
   ProtoDir.
 
--spec clean_duplicates([rebar_app_info:t()], [any()]) -> ok.
-clean_duplicates(Apps, Config) ->
+-spec backup_duplicates([rebar_app_info:t()], [any()]) -> ok.
+backup_duplicates(Apps, Config) ->
   ProtoDir      = proplists:get_value(protocols_out_dir, Config),
   BeamFilepaths = rebar_utils:find_files(ProtoDir, ".beam$"),
   BeamFilenames = [filename:basename(F) || F <- BeamFilepaths],
@@ -72,22 +73,35 @@ clean_duplicates(Apps, Config) ->
 
   Dirs    = [rebar_app_info:ebin_dir(App) || App <- Apps] -- [ProtoDir],
   rebar_api:debug( "Searching duplicates in:~n~p", [Dirs]),
-  Deleted = [clean_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
+  Deleted = [backup_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
 
   ok      = lists:foreach(fun update_app_file/1, Deleted).
 
--spec clean_duplicates_from_dir([file:name()], file:name()) ->
+-spec backup_duplicates_from_dir([file:name()], file:name()) ->
   {file:name(), [file:name()]}.
-clean_duplicates_from_dir(BeamFilenames, Dir) ->
+backup_duplicates_from_dir(BeamFilenames, Dir) ->
   Filepaths = [ begin
-                  rebar_api:debug("Deleted duplicate ~s", [F]),
-                  ok = file:delete(F),
+                  rebar_api:debug("Removed duplicate ~s", [F]),
+                  ok = file:rename(F, F ++ ".backup"),
                   F
                 end
                 || F <- rebar_utils:find_files(Dir, ".beam$"),
                    lists:member(filename:basename(F), BeamFilenames)
               ],
   {Dir, Filepaths}.
+
+-spec restore_duplicates([rebar_app_info:t()]) -> ok.
+restore_duplicates(Apps) ->
+  Dirs = [rebar_app_info:ebin_dir(App) || App <- Apps],
+  [ begin
+      DestPath = filename:rootname(Path),
+      ok       = file:rename(Path, DestPath),
+      rebar_api:debug("Restored duplicate ~s to ", [DestPath])
+    end
+    || Dir  <- Dirs,
+       Path <- rebar_utils:find_files(Dir, ".backup$")
+  ],
+  ok.
 
 -spec update_app_file({file:name(), [file:name()]}) -> ok.
 update_app_file({_Dir, []}) ->
@@ -132,11 +146,11 @@ find_dep(State, Name) ->
     [DepInfo] -> {ok, DepInfo}
   end.
 
--spec is_dep_name_fun(binary()) -> boolean().
+-spec is_dep_name_fun(binary()) -> fun((_) -> boolean()).
 is_dep_name_fun(Name) ->
   fun(Dep) -> Name =:= rebar_app_info:name(Dep) end.
 
--spec is_not_dep_name_fun(binary()) -> boolean().
+-spec is_not_dep_name_fun(binary()) -> fun((_) -> boolean()).
 is_not_dep_name_fun(Name) ->
   IsDepName = is_dep_name_fun(Name),
   fun(Dep) -> not IsDepName(Dep) end.
@@ -194,7 +208,7 @@ find_files_to_compile(AppInfo) ->
   Fun         = fun(SrcDir) -> find_files_to_compile(SrcDir, EbinDir) end,
   lists:usort(lists:flatmap(Fun, SrcDirPaths)).
 
--spec find_files_to_compile(file:name(), file:name()) -> ok.
+-spec find_files_to_compile(file:name(), file:name()) -> [file:name()].
 find_files_to_compile(SrcDir, EbinDir) ->
   SrcFiles = rebar_utils:find_files(SrcDir, "clj[ce]"),
   [Source || Source <- SrcFiles, should_compile_file(Source, SrcDir, EbinDir)].
@@ -204,7 +218,7 @@ should_compile_file(Source, SrcDir, EbinDir) ->
   Target = target_file(Source, SrcDir, EbinDir),
   should_compile(Target, Source).
 
--spec target_file(file:name(), file:name(), file:name()) -> file:name().
+-spec target_file(file:name(), file:name(), file:name()) -> binary().
 target_file(Src, SrcDir, OutDir) ->
   Target1 = re:replace(Src, ["^", SrcDir, "/"], "", [global, {return, binary}]),
   Target2 = clj_utils:resource_to_ns(Target1),
@@ -212,7 +226,7 @@ target_file(Src, SrcDir, OutDir) ->
   Target4 = [OutDir, "/", Target3, ".beam"],
   iolist_to_binary(Target4).
 
--spec should_compile(file:name(), file:name()) -> boolean().
+-spec should_compile(binary(), file:name()) -> boolean().
 should_compile(Target, Source) ->
   not filelib:is_file(Target)
     orelse filelib:last_modified(Target) < filelib:last_modified(Source).
