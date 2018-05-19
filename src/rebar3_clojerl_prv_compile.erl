@@ -10,6 +10,12 @@
 -define(CLOJERL, <<"clojerl">>).
 -define(CLJINFO_FILE, <<"cljinfo">>).
 
+-type config() :: #{ ebin_dir      => file:name()
+                   , protocols_dir => file:name()
+                   , src_dir       => file:name()
+                   , graph         => digraph:graph()
+                   }.
+
 %% =============================================================================
 %% Public API
 %% =============================================================================
@@ -64,7 +70,7 @@ protocols_dir(State) ->
   rebar_api:debug("Protocols dir: ~s", [ProtoDir]),
   ProtoDir.
 
--spec backup_duplicates([rebar_app_info:t()], [any()]) -> ok.
+-spec backup_duplicates([rebar_app_info:t()], config()) -> ok.
 backup_duplicates(Apps, Config) ->
   ProtoDir      = maps:get(protocols_dir, Config),
   BeamFilepaths = rebar_utils:find_files(ProtoDir, ".beam$"),
@@ -154,17 +160,18 @@ is_not_dep_name_fun(Name) ->
   IsDepName = is_dep_name_fun(Name),
   fun(Dep) -> not IsDepName(Dep) end.
 
--spec compile(rebar_app_info:t(), [any()]) -> boolean().
+-spec compile(rebar_app_info:t(), config()) -> boolean().
 compile(AppInfo, Config0) ->
-  Graph  = load_graph(AppInfo),
-  try find_files_to_compile(AppInfo, Graph) of
+  Graph   = load_graph(AppInfo),
+  Config1 = Config0#{graph => Graph},
+  try find_files_to_compile(AppInfo, Config1) of
     [] ->
       false;
     SrcFiles ->
       rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
       EbinDir = rebar_app_info:ebin_dir(AppInfo),
-      Config1 = Config0#{ebin_dir => EbinDir, graph => Graph},
-      [ compile_clje(Src, Config1#{src_dir => SrcDir})
+      Config2 = Config1#{ebin_dir => EbinDir},
+      [ compile_clje(Src, Config2#{src_dir => SrcDir})
         || {SrcDir, Src} <- SrcFiles
       ],
       store_graph(AppInfo, Graph),
@@ -173,7 +180,7 @@ compile(AppInfo, Config0) ->
     digraph:delete(Graph)
   end.
 
--spec compile_clje(file:name(), [any()]) -> ok.
+-spec compile_clje(file:name(), config()) -> ok.
 compile_clje(Src, Config) ->
   rebar_api:debug("Compiling ~s...", [Src]),
 
@@ -189,7 +196,7 @@ compile_clje(Src, Config) ->
   try
     ok      = 'clojerl.Var':push_bindings(Bindings),
     Targets = clj_compiler:compile_file(list_to_binary(Src)),
-    update_graph(remove_src_dir(Src, SrcDir, list), Targets, Graph)
+    update_graph(remove_src_dir(Src, SrcDir), Targets, Graph)
   catch
     _:Reason ->
       Stacktrace = erlang:get_stacktrace(),
@@ -228,8 +235,6 @@ update_graph(Source, [Target | Targets], Graph) ->
   digraph:add_vertex(Graph, TargetFilename),
   digraph:add_edge(Graph, Source, TargetFilename),
 
-  rebar_api:debug("~s -> ~s", [Source, TargetFilename]),
-
   update_graph(Source, Targets, Graph).
 
 -spec store_graph(rebar_app_info:t(), digraph:graph()) -> ok.
@@ -252,9 +257,11 @@ cljinfo_file(AppInfo) ->
 %% =============================================================================
 %% Find files to compile
 
--spec find_files_to_compile(rebar_app_info:t(), digraph:graph()) ->
+-spec find_files_to_compile(rebar_app_info:t(), config()) ->
   [{file:name(), file:name()}].
-find_files_to_compile(AppInfo, Graph) ->
+find_files_to_compile(AppInfo, Config) ->
+  Graph       = maps:get(graph, Config),
+  ProtoDir    = maps:get(protocols_dir, Config),
   OutDir      = rebar_app_info:out_dir(AppInfo),
   EbinDir     = rebar_app_info:ebin_dir(AppInfo),
   CljeSrcDirs = rebar_app_info:get(AppInfo, clje_src_dirs, ?DEFAULT_SRC_DIRS),
@@ -262,42 +269,41 @@ find_files_to_compile(AppInfo, Graph) ->
   SrcDirPaths = [filename:join(OutDir, Dir) || Dir <- CljeSrcDirs],
   ok          = code:add_pathsa(SrcDirPaths),
   Fun         = fun(SrcDir) ->
-                    find_files_to_compile(SrcDir, EbinDir, Graph)
+                    find_files_to_compile(SrcDir, EbinDir, ProtoDir, Graph)
                 end,
 
   lists:flatmap(Fun, SrcDirPaths).
 
--spec find_files_to_compile(file:name(), file:name(), digraph:graph()) ->
-  [{file:name(), file:name()}].
-find_files_to_compile(SrcDir, EbinDir, Graph) ->
+-spec find_files_to_compile( file:name()
+                           , file:name()
+                           , file:name()
+                           , digraph:graph()
+                           ) -> [{file:name(), file:name()}].
+find_files_to_compile(SrcDir, EbinDirs, ProtoDir, Graph) ->
   SrcFiles = rebar_utils:find_files(SrcDir, "clj[ce]"),
-  [{SrcDir, Source} || Source <- SrcFiles,
-                       should_compile_file(Source, SrcDir, EbinDir, Graph)
+  [ {SrcDir, Source}
+    || Source <- SrcFiles,
+       should_compile_file(Source, SrcDir, EbinDirs, ProtoDir, Graph)
   ].
 
 -spec should_compile_file( file:name()
                          , file:name()
                          , file:name()
+                         , file:name()
                          , digraph:graph()
                          ) -> boolean().
-should_compile_file(Src, SrcDir, EbinDir, Graph) ->
-  MainTarget     = target_file(Src, SrcDir, EbinDir),
-  SourceFilename = remove_src_dir(Src, SrcDir, list),
-  OtherTargets   =
-    [ filename:join(EbinDir, TargetFilename)
-      || TargetFilename <- digraph:out_neighbours(Graph, SourceFilename)
-    ],
-  Targets        = [MainTarget | OtherTargets],
-  %% rebar_api:debug("Should compile ~s given ~p", [SourceFilename, Targets]),
-  lists:any(fun(Target) -> should_compile(Target, Src) end, Targets).
-
--spec target_file(file:name(), file:name(), file:name()) -> binary().
-target_file(Src, SrcDir, OutDir) ->
-  Target1 = remove_src_dir(Src, SrcDir),
-  Target2 = clj_utils:resource_to_ns(Target1),
-  Target3 = filename:basename(Target2, filename:extension(Src)),
-  Target4 = [OutDir, "/", Target3, ".beam"],
-  iolist_to_binary(Target4).
+should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph) ->
+  %% Check if the target file is either in the ebin directory or the
+  %% protocols directory.
+  Fun = fun(Target) ->
+            should_compile(filename:join(ProtoDir, Target), Src) andalso
+            should_compile(filename:join(EbinDir, Target), Src)
+        end,
+  SrcFilename = remove_src_dir(Src, SrcDir),
+  case digraph:out_neighbours(Graph, SrcFilename) of
+    []      -> true;
+    Targets -> lists:any(Fun, Targets)
+  end.
 
 -spec should_compile(binary(), file:name()) -> boolean().
 should_compile(Target, Source) ->
@@ -306,8 +312,4 @@ should_compile(Target, Source) ->
 
 -spec remove_src_dir(file:name(), file:name()) -> file:name().
 remove_src_dir(Src, SrcDir) ->
-  remove_src_dir(Src, SrcDir, binary).
-
--spec remove_src_dir(file:name(), file:name(), list | binary) -> file:name().
-remove_src_dir(Src, SrcDir, Return) ->
-  re:replace(Src, ["^", SrcDir, "/"], "", [global, {return, Return}]).
+  re:replace(Src, ["^", SrcDir, "/"], "", [global, {return, list}]).
