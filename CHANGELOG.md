@@ -1,7 +1,24 @@
 # Change Log
 
-## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0)
+## [0.4.0](https://github.com/clojerl/rebar3_clojerl/tree/0.4.0)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.3.0...0.4.0)
+
+**Implemented enhancements:**
+
+- Handle protocol compilation correctly [\#22](https://github.com/clojerl/rebar3_clojerl/issues/22)
+
+**Fixed bugs:**
+
+- Handle protocol compilation correctly [\#22](https://github.com/clojerl/rebar3_clojerl/issues/22)
+- Compile task doesn't fail on error [\#20](https://github.com/clojerl/rebar3_clojerl/issues/20)
+
+**Merged pull requests:**
+
+- \[Closes \#22\] Handle issues with protocol compilation [\#23](https://github.com/clojerl/rebar3_clojerl/pull/23) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#20\] Abort on compiler error [\#21](https://github.com/clojerl/rebar3_clojerl/pull/21) ([jfacorro](https://github.com/jfacorro))
+
+## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0) (2018-04-23)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.2...0.3.0)
 
 **Closed issues:**
