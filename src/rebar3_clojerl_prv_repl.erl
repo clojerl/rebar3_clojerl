@@ -55,8 +55,8 @@ repl(State) ->
   code:add_pathsa(DepsPaths),
 
   {Opts, _} = rebar_state:command_parsed_args(State),
-  ok  = maybe_start_apps(Opts),
-  ok  = maybe_set_sname(Opts),
+  ok        = maybe_start_apps(Opts),
+  ok        = rebar3_clojerl_utils:maybe_set_sname(Opts),
 
   try
     ok = 'clojerl.Var':push_bindings(Bindings),
@@ -72,15 +72,5 @@ maybe_start_apps(Opts) ->
     AppsStr ->
       Apps = [list_to_atom(X) || X <- string:tokens(AppsStr, ",")],
       [application:ensure_all_started(Name) || Name <- Apps],
-      ok
-  end.
-
--spec maybe_set_sname(opts()) -> ok.
-maybe_set_sname(Opts) ->
-  case proplists:get_value(sname, Opts, undefined) of
-    undefined -> ok;
-    SNameStr ->
-      SName   = list_to_atom(SNameStr),
-      {ok, _} = net_kernel:start([SName, shortnames]),
       ok
   end.

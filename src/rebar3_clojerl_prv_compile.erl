@@ -1,14 +1,12 @@
 -module(rebar3_clojerl_prv_compile).
 
+-include("rebar3_clojerl.hrl").
+
 -export([init/1, do/1, format_error/1]).
 
 -define(PROVIDER, compile).
 -define(NAMESPACE, clojerl).
 -define(DEPS, [{default, compile}]).
--define(DEFAULT_SRC_DIRS, ["src"]).
-
--define(CLOJERL, <<"clojerl">>).
--define(CLJINFO_FILE, <<"cljinfo">>).
 
 -type config() :: #{ ebin_dir      => file:name()
                    , protocols_dir => file:name()
@@ -38,10 +36,10 @@ init(State) ->
 do(State) ->
   DepsPaths = rebar_state:code_paths(State, all_deps),
   ok        = code:add_pathsa(DepsPaths),
-  ok        = ensure_clojerl(State),
+  ok        = rebar3_clojerl_utils:ensure_clojerl(State),
 
-  AllApps   = all_apps(State),
-  Apps      = lists:filter(is_not_dep_name_fun(?CLOJERL), AllApps),
+  AllApps   = rebar3_clojerl_utils:all_apps(State),
+  Apps      = rebar3_clojerl_utils:filter_app(AllApps, ?CLOJERL),
   Config    = #{protocols_dir => protocols_dir(State)},
 
   restore_duplicates(AllApps),
@@ -57,10 +55,6 @@ format_error(Reason) ->
 %% =============================================================================
 %% Internal functions
 %% =============================================================================
-
--spec all_apps(rebar_state:t()) -> [rebar_app_info:t()].
-all_apps(State) ->
-  lists:usort(rebar_state:all_deps(State)) ++ rebar_state:project_apps(State).
 
 -spec protocols_dir(rebar_state:t()) -> file:name().
 protocols_dir(State) ->
@@ -133,32 +127,6 @@ update_app_file({Dir, Filepaths}) ->
       ok;
     [] -> ok
   end.
-
--spec ensure_clojerl(rebar_state:t()) -> ok.
-ensure_clojerl(State) ->
-  case find_dep(State, ?CLOJERL) of
-    notfound ->
-      rebar_api:abort("Clojerl was not found as a dependency", []);
-    {ok, _} ->
-      ok = clojerl:start()
-  end.
-
--spec find_dep(rebar_state:t(), binary()) -> notfound | {ok, any()}.
-find_dep(State, Name) ->
-  Deps  = rebar_state:all_deps(State),
-  case lists:filter(is_dep_name_fun(Name), Deps) of
-    [] -> notfound;
-    [DepInfo] -> {ok, DepInfo}
-  end.
-
--spec is_dep_name_fun(binary()) -> fun((_) -> boolean()).
-is_dep_name_fun(Name) ->
-  fun(Dep) -> Name =:= rebar_app_info:name(Dep) end.
-
--spec is_not_dep_name_fun(binary()) -> fun((_) -> boolean()).
-is_not_dep_name_fun(Name) ->
-  IsDepName = is_dep_name_fun(Name),
-  fun(Dep) -> not IsDepName(Dep) end.
 
 -spec compile(rebar_app_info:t(), config()) -> boolean().
 compile(AppInfo, Config0) ->
@@ -280,7 +248,7 @@ find_files_to_compile(AppInfo, Config) ->
                            , digraph:graph()
                            ) -> [{file:name(), file:name()}].
 find_files_to_compile(SrcDir, EbinDirs, ProtoDir, Graph) ->
-  SrcFiles = rebar_utils:find_files(SrcDir, "clj[ce]"),
+  SrcFiles = rebar_utils:find_files(SrcDir, ".clj[ce]"),
   [ {SrcDir, Source}
     || Source <- SrcFiles,
        should_compile_file(Source, SrcDir, EbinDirs, ProtoDir, Graph)
