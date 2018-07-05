@@ -16,6 +16,7 @@
 init(State) ->
   Opts     = [ {sname, undefined, "sname", string, "Erlang node name."}
              , {ns, undefined, "ns", string, "Namespace to test."}
+             , {var, undefined, "var", string, "Var to test."}
              ],
   Provider = providers:create([ {namespace,  ?NAMESPACE}
                               , {name,       ?PROVIDER}
@@ -44,7 +45,9 @@ do(State) ->
     [test(AppInfo, Opts) || AppInfo <- Apps]
   catch _:Reason ->
       Stacktrace = erlang:get_stacktrace(),
-      rebar_api:debug("Stacktrace:~n~s", [clj_utils:stacktrace(Stacktrace)]),
+      rebar_api:debug( "Stacktrace:~n~s"
+                     , [clj_utils:format_stacktrace(Stacktrace)]
+                     ),
       rebar_api:abort( "Error while testing: ~s"
                      , [clj_rt:str(Reason)]
                      )
@@ -63,16 +66,33 @@ format_error(Reason) ->
 test(AppInfo, Opts) ->
   TestDirs  = rebar_app_info:get(AppInfo, clje_test_dirs, ?DEFAULT_TEST_DIRS),
   ok        = code:add_pathsa(TestDirs),
-  NsSymbols = case proplists:get_value(ns, Opts, undefined) of
+  NsOpt     = proplists:get_value(ns, Opts, undefined),
+  VarOpt    = proplists:get_value(var, Opts, undefined),
+
+  NsSymbols = case NsOpt of
                 undefined -> lists:flatmap(fun find_tests/1, TestDirs);
-                NsStr -> [clj_rt:symbol(list_to_binary(NsStr ++ "-test"))]
+                NsOpt     -> [clj_rt:symbol(list_to_binary(NsOpt))]
+              end,
+
+  %% TODO: maybe change this to a compilation of the file
+  ['clojure.core':require([NsSym]) || NsSym <- NsSymbols],
+
+  Var       = case {NsOpt, VarOpt} of
+                {undefined, _} -> undefined;
+                {_, undefined} -> undefined;
+                _ ->
+                  VarSymbol = clj_rt:symbol( list_to_binary(NsOpt)
+                                           , list_to_binary(VarOpt)
+                                           ),
+                  'clojure.core':'find-var'(VarSymbol)
               end,
 
   rebar_api:debug("Test namespaces: ~p", [clj_rt:str(NsSymbols)]),
 
-  %% TODO: change this to a compilation of the file
-  ['clojure.core':require([NsSym]) || NsSym <- NsSymbols],
-  'clojure.test':'run-tests'(NsSymbols),
+  case Var of
+    undefined -> 'clojure.test':'run-tests'(NsSymbols);
+    _         -> 'clojure.test':'test-var'(Var)
+  end,
   ok.
 
 -spec find_tests(file:name()) -> ['clojerl.Symbol':type()].

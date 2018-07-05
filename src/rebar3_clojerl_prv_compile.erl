@@ -168,7 +168,9 @@ compile_clje(Src, Config) ->
   catch
     _:Reason ->
       Stacktrace = erlang:get_stacktrace(),
-      rebar_api:debug("Stacktrace:~n~s", [clj_utils:stacktrace(Stacktrace)]),
+      rebar_api:debug( "Stacktrace:~n~s"
+                     , [clj_utils:format_stacktrace(Stacktrace)]
+                     ),
       rebar_api:abort( "Error while compiling ~s: ~s"
                      , [Src, clj_rt:str(Reason)]
                      )
