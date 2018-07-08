@@ -6,8 +6,6 @@
 -define(NAMESPACE, clojerl).
 -define(DEPS, [{clojerl, compile}]).
 
--define(CLOJERL, <<"clojerl">>).
-
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
   Provider = providers:create([ {namespace,  ?NAMESPACE}
