@@ -1,7 +1,18 @@
 # Change Log
 
-## [0.4.0](https://github.com/clojerl/rebar3_clojerl/tree/0.4.0)
+## [Unreleased](https://github.com/clojerl/rebar3_clojerl/tree/0.5.0)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.4.0...0.5.0)
+
+**Closed issues:**
+
+- Add command to run tests [\#12](https://github.com/clojerl/rebar3_clojerl/issues/12)
+
+**Merged pull requests:**
+
+- \[Closes \#12\] Run tests command [\#24](https://github.com/clojerl/rebar3_clojerl/pull/24) ([jfacorro](https://github.com/jfacorro))
+
+## [0.4.0](https://github.com/clojerl/rebar3_clojerl/tree/0.4.0) (2018-05-20)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.3.0...0.4.0)
 
 **Implemented enhancements:**
