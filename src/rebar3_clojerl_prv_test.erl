@@ -74,6 +74,11 @@ test(AppInfo, Opts) ->
                 NsOpt     -> [clj_rt:symbol(list_to_binary(NsOpt))]
               end,
 
+  %% Change the current ns to a random one to avoid sticky modules or dirs
+  TestNsSym = clj_rt:gensym(<<"test-ns_">>),
+  'clojerl.Namespace':find_or_create(TestNsSym),
+  'clojure.core':use([clj_rt:symbol(<<"clojure.core">>)]),
+
   %% TODO: maybe change this to a compilation of the file
   ['clojure.core':require([NsSym]) || NsSym <- NsSymbols],
 
