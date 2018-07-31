@@ -26,22 +26,22 @@ all_apps(State) ->
 
 -spec find_app(rebar_state:t(), binary()) -> notfound | {ok, any()}.
 find_app(Apps, Name) ->
-  case lists:filter(is_dep_name_fun(Name), Apps) of
+  case lists:filter(is_app_name_fun(Name), Apps) of
     [] -> notfound;
     [DepInfo] -> {ok, DepInfo}
   end.
 
 -spec filter_app([rebar_app_info:t()], binary()) -> notfound | {ok, any()}.
 filter_app(Apps, Name) ->
-  lists:filter(is_not_dep_name_fun(Name), Apps).
+  lists:filter(is_not_app_name_fun(Name), Apps).
 
--spec is_dep_name_fun(binary()) -> fun((_) -> boolean()).
-is_dep_name_fun(Name) ->
+-spec is_app_name_fun(binary()) -> fun((_) -> boolean()).
+is_app_name_fun(Name) ->
   fun(Dep) -> Name =:= rebar_app_info:name(Dep) end.
 
--spec is_not_dep_name_fun(binary()) -> fun((_) -> boolean()).
-is_not_dep_name_fun(Name) ->
-  IsDepName = is_dep_name_fun(Name),
+-spec is_not_app_name_fun(binary()) -> fun((_) -> boolean()).
+is_not_app_name_fun(Name) ->
+  IsDepName = is_app_name_fun(Name),
   fun(Dep) -> not IsDepName(Dep) end.
 
 -spec maybe_set_sname(opts()) -> ok.
