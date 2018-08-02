@@ -80,7 +80,7 @@ test(AppInfo, Opts) ->
   'clojure.core':use([clj_rt:symbol(<<"clojure.core">>)]),
 
   %% TODO: maybe change this to a compilation of the file
-  ['clojure.core':require([NsSym]) || NsSym <- NsSymbols],
+  'clojure.core':require(NsSymbols),
 
   Var       = case {NsOpt, VarOpt} of
                 {undefined, _} -> undefined;
