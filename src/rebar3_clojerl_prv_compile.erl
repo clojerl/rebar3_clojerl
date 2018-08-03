@@ -132,15 +132,18 @@ update_app_file({Dir, Filepaths}) ->
 compile(AppInfo, Config0) ->
   Graph   = load_graph(AppInfo),
   Config1 = Config0#{graph => Graph},
-  try find_files_to_compile(AppInfo, Config1) of
+  try find_files_to_compile(AppInfo) of
     [] ->
       false;
     SrcFiles ->
       rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
-      EbinDir = rebar_app_info:ebin_dir(AppInfo),
+      rebar_api:debug("Files to compile: ~p", [SrcFiles]),
+      EbinDir  = rebar_app_info:ebin_dir(AppInfo),
+      ProtoDir = list_to_binary(maps:get(protocols_dir, Config1)),
       Config2 = Config1#{ebin_dir => EbinDir},
       [ compile_clje(Src, Config2#{src_dir => SrcDir})
-        || {SrcDir, Src} <- SrcFiles
+        || {SrcDir, Src} <- SrcFiles,
+           should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph)
       ],
       store_graph(AppInfo, Graph),
       true
@@ -228,24 +231,17 @@ cljinfo_file(AppInfo) ->
 %% =============================================================================
 %% Find files to compile
 
--spec find_files_to_compile(rebar_app_info:t(), config()) ->
-  [{file:name(), file:name()}].
-find_files_to_compile(AppInfo, Config) ->
-  Graph       = maps:get(graph, Config),
-  ProtoDir    = maps:get(protocols_dir, Config),
+-spec find_files_to_compile(rebar_app_info:t()) -> [{file:name(), file:name()}].
+find_files_to_compile(AppInfo) ->
   OutDir      = rebar_app_info:out_dir(AppInfo),
-  EbinDir     = rebar_app_info:ebin_dir(AppInfo),
   CljeSrcDirs = rebar_app_info:get(AppInfo, clje_src_dirs, ?DEFAULT_SRC_DIRS),
   CljeFirst   = clje_compile_first(AppInfo),
   CljeExclude = rebar_app_info:get(AppInfo, clje_exclude, []),
 
   SrcDirPaths = [filename:join(OutDir, Dir) || Dir <- CljeSrcDirs],
   ok          = code:add_pathsa(SrcDirPaths),
-  Fun         = fun(SrcDir) ->
-                    find_files_to_compile(SrcDir, EbinDir, ProtoDir, Graph)
-                end,
 
-  AllFiles    = lists:flatmap(Fun, SrcDirPaths),
+  AllFiles    = lists:flatmap(fun find_files/1, SrcDirPaths),
   SortFun     = fun({_, X}, {_, Y}) ->
                     maps:get(X, CljeFirst, -1) > maps:get(Y, CljeFirst, -1)
                 end,
@@ -254,17 +250,10 @@ find_files_to_compile(AppInfo, Config) ->
        not lists:member(Src, CljeExclude)
   ].
 
--spec find_files_to_compile( file:name()
-                           , file:name()
-                           , file:name()
-                           , digraph:graph()
-                           ) -> [{file:name(), file:name()}].
-find_files_to_compile(SrcDir, EbinDirs, ProtoDir, Graph) ->
+-spec find_files(file:name()) -> [{file:name(), file:name()}].
+find_files(SrcDir) ->
   SrcFiles = rebar_utils:find_files(SrcDir, ".clj[ce]"),
-  [ {SrcDir, remove_src_dir(Source, SrcDir)}
-    || Source <- SrcFiles,
-       should_compile_file(Source, SrcDir, EbinDirs, ProtoDir, Graph)
-  ].
+  [{SrcDir, remove_src_dir(Source, SrcDir)} || Source <- SrcFiles].
 
 -spec should_compile_file( file:name()
                          , file:name()
@@ -275,12 +264,12 @@ find_files_to_compile(SrcDir, EbinDirs, ProtoDir, Graph) ->
 should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph) ->
   %% Check if the target file is either in the ebin directory or the
   %% protocols directory.
+  FullSrc = filename:join(SrcDir, Src),
   Fun = fun(Target) ->
-            should_compile(filename:join(ProtoDir, Target), Src) andalso
-            should_compile(filename:join(EbinDir, Target), Src)
+            should_compile(filename:join(ProtoDir, Target), FullSrc) andalso
+            should_compile(filename:join(EbinDir, Target), FullSrc)
         end,
-  SrcFilename = remove_src_dir(Src, SrcDir),
-  case digraph:out_neighbours(Graph, SrcFilename) of
+  case digraph:out_neighbours(Graph, Src) of
     []      -> true;
     Targets -> lists:any(Fun, Targets)
   end.
