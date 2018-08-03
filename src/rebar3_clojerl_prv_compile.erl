@@ -150,7 +150,7 @@ compile(AppInfo, Config0) ->
 
 -spec compile_clje(file:name(), config()) -> ok.
 compile_clje(Src, Config) ->
-  rebar_api:debug("Compiling ~s...", [Src]),
+  io:format("%%% Compiling ~s...~n", [Src]),
 
   SrcDir   = list_to_binary(maps:get(src_dir, Config)),
   EbinDir  = list_to_binary(maps:get(ebin_dir, Config)),
@@ -163,8 +163,9 @@ compile_clje(Src, Config) ->
                },
   try
     ok      = 'clojerl.Var':push_bindings(Bindings),
-    Targets = clj_compiler:compile_file(list_to_binary(Src)),
-    update_graph(remove_src_dir(Src, SrcDir), Targets, Graph)
+    FullSrc = filename:join(SrcDir, Src),
+    Targets = clj_compiler:compile_file(FullSrc),
+    update_graph(Src, Targets, Graph)
   catch
     _:Reason ->
       Stacktrace = erlang:get_stacktrace(),
@@ -235,6 +236,8 @@ find_files_to_compile(AppInfo, Config) ->
   OutDir      = rebar_app_info:out_dir(AppInfo),
   EbinDir     = rebar_app_info:ebin_dir(AppInfo),
   CljeSrcDirs = rebar_app_info:get(AppInfo, clje_src_dirs, ?DEFAULT_SRC_DIRS),
+  CljeFirst   = clje_compile_first(AppInfo),
+  CljeExclude = rebar_app_info:get(AppInfo, clje_exclude, []),
 
   SrcDirPaths = [filename:join(OutDir, Dir) || Dir <- CljeSrcDirs],
   ok          = code:add_pathsa(SrcDirPaths),
@@ -242,7 +245,14 @@ find_files_to_compile(AppInfo, Config) ->
                     find_files_to_compile(SrcDir, EbinDir, ProtoDir, Graph)
                 end,
 
-  lists:flatmap(Fun, SrcDirPaths).
+  AllFiles    = lists:flatmap(Fun, SrcDirPaths),
+  SortFun     = fun({_, X}, {_, Y}) ->
+                    maps:get(X, CljeFirst, -1) > maps:get(Y, CljeFirst, -1)
+                end,
+  [ X
+    || {_, Src} = X <- lists:sort(SortFun, AllFiles),
+       not lists:member(Src, CljeExclude)
+  ].
 
 -spec find_files_to_compile( file:name()
                            , file:name()
@@ -251,7 +261,7 @@ find_files_to_compile(AppInfo, Config) ->
                            ) -> [{file:name(), file:name()}].
 find_files_to_compile(SrcDir, EbinDirs, ProtoDir, Graph) ->
   SrcFiles = rebar_utils:find_files(SrcDir, ".clj[ce]"),
-  [ {SrcDir, Source}
+  [ {SrcDir, remove_src_dir(Source, SrcDir)}
     || Source <- SrcFiles,
        should_compile_file(Source, SrcDir, EbinDirs, ProtoDir, Graph)
   ].
@@ -283,3 +293,12 @@ should_compile(Target, Source) ->
 -spec remove_src_dir(file:name(), file:name()) -> file:name().
 remove_src_dir(Src, SrcDir) ->
   re:replace(Src, ["^", SrcDir, "/"], "", [global, {return, list}]).
+
+-spec clje_compile_first(rebar_app_info:t()) -> #{list() => non_neg_integer()}.
+clje_compile_first(AppInfo) ->
+  CljeFirst = rebar_app_info:get(AppInfo, clje_compile_first, []),
+  Fun = fun (X, {Acc, N}) ->
+            {Acc#{X => N}, N - 1}
+        end,
+  {Positions, _} = lists:foldl(Fun, {#{}, length(CljeFirst)}, CljeFirst),
+  Positions.
