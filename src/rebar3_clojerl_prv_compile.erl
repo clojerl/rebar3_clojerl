@@ -39,11 +39,10 @@ do(State) ->
   ok        = rebar3_clojerl_utils:ensure_clojerl(State),
 
   AllApps   = rebar3_clojerl_utils:all_apps(State),
-  Apps      = rebar3_clojerl_utils:filter_app(AllApps, ?CLOJERL),
   Config    = #{protocols_dir => protocols_dir(State)},
 
   restore_duplicates(AllApps),
-  [compile(AppInfo, Config) || AppInfo <- Apps],
+  [compile(AppInfo, Config) || AppInfo <- AllApps],
   backup_duplicates(AllApps, Config),
 
   {ok, State}.
