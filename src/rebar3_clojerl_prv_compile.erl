@@ -34,16 +34,29 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  DepsPaths = rebar_state:code_paths(State, all_deps),
-  ok        = code:add_pathsa(DepsPaths),
-  ok        = rebar3_clojerl_utils:ensure_clojerl(State),
+  DepsPaths   = rebar_state:code_paths(State, all_deps),
+  ok          = code:add_pathsa(DepsPaths),
 
-  AllApps   = rebar3_clojerl_utils:all_apps(State),
-  Config    = #{protocols_dir => protocols_dir(State)},
+  ProjectApps = rebar_state:project_apps(State),
+  Deps        = rebar_state:all_deps(State),
 
-  restore_duplicates(AllApps),
-  [compile(AppInfo, Config) || AppInfo <- AllApps],
-  backup_duplicates(AllApps, Config),
+  AppsPaths   = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- ProjectApps],
+  ok          = code:add_pathsa(AppsPaths),
+
+  ok          = rebar3_clojerl_utils:ensure_clojerl(),
+
+  Apps0       = Deps ++ ProjectApps,
+  Config      = #{protocols_dir => protocols_dir(State)},
+
+  %% More than one application might modify existing protocols, so we
+  %% restore the original backed-up protocol modules before compiling.
+  try
+    restore_duplicates(DepsPaths),
+    Apps1 = maybe_compile_clojerl(Apps0, Config),
+    [compile(AppInfo, Config) || AppInfo <- Apps1]
+  after
+    backup_duplicates(DepsPaths, Config)
+  end,
 
   {ok, State}.
 
@@ -63,13 +76,23 @@ protocols_dir(State) ->
   rebar_api:debug("Protocols dir: ~s", [ProtoDir]),
   ProtoDir.
 
+-spec maybe_compile_clojerl([rebar_app_info:t()], config()) ->
+  [rebar_app_info:t()].
+maybe_compile_clojerl(Apps, Config) ->
+  case rebar3_clojerl_utils:find_app(Apps, ?CLOJERL) of
+    notfound -> Apps;
+    {ok, ClojerlApp} ->
+      compile(ClojerlApp, Config),
+      Apps -- [ClojerlApp]
+  end.
+
 -spec backup_duplicates([rebar_app_info:t()], config()) -> ok.
-backup_duplicates(Apps, Config) ->
+backup_duplicates(DepsDirs, Config) ->
   ProtoDir      = maps:get(protocols_dir, Config),
   BeamFilepaths = rebar_utils:find_files(ProtoDir, ".beam$"),
   BeamFilenames = [filename:basename(F) || F <- BeamFilepaths],
 
-  Dirs    = [rebar_app_info:ebin_dir(App) || App <- Apps] -- [ProtoDir],
+  Dirs    = DepsDirs -- [ProtoDir],
   rebar_api:debug("Finding duplicates for:~n~p~nin~n~p", [BeamFilenames, Dirs]),
   Deleted = [backup_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
 
@@ -88,9 +111,8 @@ backup_duplicates_from_dir(BeamFilenames, Dir) ->
               ],
   {Dir, Filepaths}.
 
--spec restore_duplicates([rebar_app_info:t()]) -> ok.
-restore_duplicates(Apps) ->
-  Dirs = [rebar_app_info:ebin_dir(App) || App <- Apps],
+-spec restore_duplicates([file:name()]) -> ok.
+restore_duplicates(Dirs) ->
   [ begin
       DestPath = filename:rootname(Path),
       ok       = file:rename(Path, DestPath),

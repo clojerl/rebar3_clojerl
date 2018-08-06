@@ -37,9 +37,13 @@ do(State) ->
 
   DepsPaths = rebar_state:code_paths(State, all_deps),
   ok        = code:add_pathsa(DepsPaths),
-  ok        = rebar3_clojerl_utils:ensure_clojerl(State),
 
   Apps      = rebar_state:project_apps(State),
+  AppsPaths = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- Apps],
+  ok        = code:add_pathsa(AppsPaths),
+
+  %% Ensure clojerl after adding all code pahts
+  ok        = rebar3_clojerl_utils:ensure_clojerl(),
 
   try
     [test(AppInfo, Opts) || AppInfo <- Apps]
