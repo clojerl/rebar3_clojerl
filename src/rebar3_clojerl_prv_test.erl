@@ -32,6 +32,8 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
+  rebar_api:info("Running Clojerl tests...", []),
+
   {Opts, _} = rebar_state:command_parsed_args(State),
   ok        = rebar3_clojerl_utils:maybe_set_sname(Opts),
 
