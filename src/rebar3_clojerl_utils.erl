@@ -2,7 +2,7 @@
 
 -include("rebar3_clojerl.hrl").
 
--export([ ensure_clojerl/1
+-export([ ensure_clojerl/0
         , all_apps/1
         , find_app/2
         , filter_app/2
@@ -11,13 +11,13 @@
 
 -type opts() :: [{atom(), any()}].
 
--spec ensure_clojerl(rebar_state:t()) -> ok.
-ensure_clojerl(State) ->
-  case find_app(all_apps(State), ?CLOJERL) of
-    notfound ->
-      rebar_api:abort("Clojerl was not found as a dependency", []);
-    {ok, _} ->
-      ok = clojerl:start()
+-spec ensure_clojerl() -> ok.
+ensure_clojerl() ->
+  case code:ensure_loaded(clojerl) of
+    {module, clojerl} ->
+      ok = clojerl:start();
+    {error, Reason} ->
+      rebar_api:abort("Application Clojerl could not be started: ~p", [Reason])
   end.
 
 -spec all_apps(rebar_state:t()) -> [rebar_app_info:t()].

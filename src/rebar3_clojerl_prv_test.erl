@@ -32,14 +32,20 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
+  rebar_api:info("Running Clojerl tests...", []),
+
   {Opts, _} = rebar_state:command_parsed_args(State),
   ok        = rebar3_clojerl_utils:maybe_set_sname(Opts),
 
   DepsPaths = rebar_state:code_paths(State, all_deps),
   ok        = code:add_pathsa(DepsPaths),
-  ok        = rebar3_clojerl_utils:ensure_clojerl(State),
 
   Apps      = rebar_state:project_apps(State),
+  AppsPaths = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- Apps],
+  ok        = code:add_pathsa(AppsPaths),
+
+  %% Ensure clojerl after adding all code pahts
+  ok        = rebar3_clojerl_utils:ensure_clojerl(),
 
   try
     [test(AppInfo, Opts) || AppInfo <- Apps]
@@ -69,7 +75,7 @@ test(AppInfo, Opts) ->
   NsOpt     = proplists:get_value(ns, Opts, undefined),
   VarOpt    = proplists:get_value(var, Opts, undefined),
 
-  NsSymbols = case NsOpt of
+  NsSyms0   = case NsOpt of
                 undefined -> lists:flatmap(fun find_tests/1, TestDirs);
                 NsOpt     -> [clj_rt:symbol(list_to_binary(NsOpt))]
               end,
@@ -80,7 +86,7 @@ test(AppInfo, Opts) ->
   'clojure.core':use([clj_rt:symbol(<<"clojure.core">>)]),
 
   %% TODO: maybe change this to a compilation of the file
-  'clojure.core':require(NsSymbols),
+  'clojure.core':require(NsSyms0),
 
   Var       = case {NsOpt, VarOpt} of
                 {undefined, _} -> undefined;
@@ -92,11 +98,14 @@ test(AppInfo, Opts) ->
                   'clojure.core':'find-var'(VarSymbol)
               end,
 
-  rebar_api:debug("Test namespaces: ~p", [clj_rt:str(NsSymbols)]),
-
   case Var of
-    undefined -> 'clojure.test':'run-tests'(NsSymbols);
-    _         -> 'clojure.test':'test-var'(Var)
+    undefined ->
+      NsSyms1 = [X || X <- NsSyms0, 'clojure.core':'find-ns'(X) =/= undefined],
+      rebar_api:debug("Test namespaces: ~s", [clj_rt:str(NsSyms1)]),
+      'clojure.test':'run-tests'(NsSyms1);
+    _         ->
+      rebar_api:debug("Test var: ~s", [clj_rt:str(Var)]),
+      'clojure.test':'test-var'(Var)
   end,
   ok.
 
