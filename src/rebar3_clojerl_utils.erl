@@ -31,7 +31,7 @@ find_app(Apps, Name) ->
     [DepInfo] -> {ok, DepInfo}
   end.
 
--spec filter_app([rebar_app_info:t()], binary()) -> notfound | {ok, any()}.
+-spec filter_app([rebar_app_info:t()], binary()) -> [rebar_app_info:t()].
 filter_app(Apps, Name) ->
   lists:filter(is_not_app_name_fun(Name), Apps).
 

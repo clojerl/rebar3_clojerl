@@ -160,7 +160,7 @@ compile(AppInfo, Config0) ->
       rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
       rebar_api:debug("Files to compile: ~p", [SrcFiles]),
       EbinDir  = rebar_app_info:ebin_dir(AppInfo),
-      ProtoDir = list_to_binary(maps:get(protocols_dir, Config1)),
+      ProtoDir = maps:get(protocols_dir, Config1),
       Config2 = Config1#{ebin_dir => EbinDir},
       [ compile_clje(Src, Config2#{src_dir => SrcDir})
         || {SrcDir, Src} <- SrcFiles,
@@ -221,7 +221,7 @@ load_graph(AppInfo) ->
   end,
   Graph.
 
--spec update_graph(binary(), [binary()], digraph:graph()) -> ok.
+-spec update_graph(file:name(), [binary()], digraph:graph()) -> ok.
 update_graph(_Source, [], _Graph)  -> ok;
 update_graph(Source, [Target | Targets], Graph) ->
   TargetFilename = rebar_utils:to_list(filename:basename(Target)),
