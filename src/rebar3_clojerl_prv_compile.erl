@@ -153,11 +153,13 @@ update_app_file({Dir, Filepaths}) ->
 compile(AppInfo, Config0) ->
   Graph   = load_graph(AppInfo),
   Config1 = Config0#{graph => Graph},
+  AppName = rebar_app_info:name(AppInfo),
   try find_files_to_compile(AppInfo) of
     [] ->
+      rebar_api:debug("No files to compile for ~s", [AppName]),
       false;
     SrcFiles ->
-      rebar_api:info("Clojerl Compiling ~s", [rebar_app_info:name(AppInfo)]),
+      rebar_api:info("Clojerl Compiling ~s", [AppName]),
       rebar_api:debug("Files to compile: ~p", [SrcFiles]),
       EbinDir  = rebar_app_info:ebin_dir(AppInfo),
       ProtoDir = maps:get(protocols_dir, Config1),
@@ -266,9 +268,9 @@ find_files_to_compile(AppInfo) ->
   SortFun     = fun({_, X}, {_, Y}) ->
                     maps:get(X, CljeFirst, -1) > maps:get(Y, CljeFirst, -1)
                 end,
-  [ X
-    || {_, Src} = X <- lists:sort(SortFun, AllFiles),
-       not lists:member(Src, CljeExclude)
+
+  [ X || {_, Src} = X <- lists:sort(SortFun, AllFiles),
+         not lists:member(Src, CljeExclude)
   ].
 
 -spec find_files(file:name()) -> [{file:name(), file:name()}].
@@ -291,8 +293,13 @@ should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph) ->
             should_compile(filename:join(EbinDir, Target), FullSrc)
         end,
   case digraph:out_neighbours(Graph, Src) of
-    []      -> true;
-    Targets -> lists:any(Fun, Targets)
+    [] ->
+      %% Assume the target from the filename
+      %% when there are none in the graph
+      Target = src_to_target(Src),
+      Fun(Target);
+    Targets ->
+      lists:any(Fun, Targets)
   end.
 
 -spec should_compile(binary(), file:name()) -> boolean().
@@ -312,3 +319,9 @@ clje_compile_first(AppInfo) ->
         end,
   {Positions, _} = lists:foldl(Fun, {#{}, length(CljeFirst)}, CljeFirst),
   Positions.
+
+-spec src_to_target(file:name()) -> file:name().
+src_to_target(Src) ->
+  SrcBin = iolist_to_binary(Src),
+  Filename = binary:replace(SrcBin, <<"_">>, <<"-">>, [global]),
+  <<Filename/binary, ".beam">>.
