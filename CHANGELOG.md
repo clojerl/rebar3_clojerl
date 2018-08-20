@@ -1,7 +1,23 @@
 # Change Log
 
-## [Unreleased](https://github.com/clojerl/rebar3_clojerl/tree/0.5.0)
+## [Unreleased](https://github.com/clojerl/rebar3_clojerl/tree/0.6.1)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.0...0.6.1)
+
+**Merged pull requests:**
+
+- Assume a single target from the source file [\#29](https://github.com/clojerl/rebar3_clojerl/pull/29) ([jfacorro](https://github.com/jfacorro))
+- Fix dialyzer warnings [\#27](https://github.com/clojerl/rebar3_clojerl/pull/27) ([jfacorro](https://github.com/jfacorro))
+
+## [0.6.0](https://github.com/clojerl/rebar3_clojerl/tree/0.6.0) (2018-08-08)
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.5.0...0.6.0)
+
+**Merged pull requests:**
+
+- Adapt plugin to be able to compile Clojerl with it [\#26](https://github.com/clojerl/rebar3_clojerl/pull/26) ([jfacorro](https://github.com/jfacorro))
+- Include apps finding clojerl [\#25](https://github.com/clojerl/rebar3_clojerl/pull/25) ([jfacorro](https://github.com/jfacorro))
+
+## [0.5.0](https://github.com/clojerl/rebar3_clojerl/tree/0.5.0) (2018-07-10)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.4.0...0.5.0)
 
 **Closed issues:**
