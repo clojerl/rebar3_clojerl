@@ -305,7 +305,8 @@ should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph) ->
 -spec should_compile(binary(), file:name()) -> boolean().
 should_compile(Target, Source) ->
   not filelib:is_file(Target)
-    orelse filelib:last_modified(Target) < filelib:last_modified(Source).
+    orelse filelib:last_modified(Target) < filelib:last_modified(Source)
+    orelse not is_clojerl_compiled(Target).
 
 -spec remove_src_dir(file:name(), file:name()) -> file:name().
 remove_src_dir(Src, SrcDir) ->
@@ -322,6 +323,17 @@ clje_compile_first(AppInfo) ->
 
 -spec src_to_target(file:name()) -> file:name().
 src_to_target(Src) ->
-  SrcBin = iolist_to_binary(Src),
-  Filename = binary:replace(SrcBin, <<"_">>, <<"-">>, [global]),
-  <<Filename/binary, ".beam">>.
+  SrcBin    = iolist_to_binary(Src),
+  Filename0 = clj_utils:resource_to_ns(SrcBin),
+  Filename1 = filename:rootname(Filename0),
+  <<Filename1/binary, ".beam">>.
+
+-spec is_clojerl_compiled(file:name()) -> boolean().
+is_clojerl_compiled(Path) ->
+  PathStr    = rebar_utils:to_list(Path),
+  CoreChunk  = clj_utils:core_chunk(),
+  ChunkNames = [CoreChunk],
+  ChunkOpts  = [allow_missing_chunks],
+
+  {ok, {_, Chunks}} = beam_lib:chunks(PathStr, ChunkNames, ChunkOpts),
+  proplists:get_value(CoreChunk, Chunks) =/= missing_chunk.
