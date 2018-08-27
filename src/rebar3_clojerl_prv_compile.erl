@@ -38,14 +38,15 @@ do(State) ->
   ok          = code:add_pathsa(DepsPaths),
 
   ProjectApps = rebar_state:project_apps(State),
-  Deps        = rebar_state:all_deps(State),
+  Deps0       = rebar_state:all_deps(State),
+  {ok, Deps1} = rebar_digraph:compile_order(Deps0),
 
   AppsPaths   = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- ProjectApps],
   ok          = code:add_pathsa(AppsPaths),
 
   ok          = rebar3_clojerl_utils:ensure_clojerl(),
 
-  Apps0       = Deps ++ ProjectApps,
+  Apps0       = Deps1 ++ ProjectApps,
   Config      = #{protocols_dir => protocols_dir(State)},
 
   %% More than one application might modify existing protocols, so we
