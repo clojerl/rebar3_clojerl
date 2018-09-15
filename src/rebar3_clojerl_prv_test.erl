@@ -49,8 +49,7 @@ do(State) ->
 
   try
     [test(AppInfo, Opts) || AppInfo <- Apps]
-  catch _:Reason ->
-      Stacktrace = erlang:get_stacktrace(),
+  catch ?WITH_STACKTRACE(_, Reason, Stacktrace)
       rebar_api:debug( "Stacktrace:~n~s"
                      , [clj_utils:format_stacktrace(Stacktrace)]
                      ),
