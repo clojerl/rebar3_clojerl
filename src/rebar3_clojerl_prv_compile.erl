@@ -193,9 +193,7 @@ compile_clje(Src, Config) ->
     FullSrc = filename:join(SrcDir, Src),
     Targets = clj_compiler:compile_file(FullSrc),
     update_graph(Src, Targets, Graph)
-  catch
-    _:Reason ->
-      Stacktrace = erlang:get_stacktrace(),
+  catch ?WITH_STACKTRACE(_, Reason, Stacktrace)
       rebar_api:debug( "Stacktrace:~n~s"
                      , [clj_utils:format_stacktrace(Stacktrace)]
                      ),
