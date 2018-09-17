@@ -48,7 +48,7 @@ do(State) ->
   ok        = rebar3_clojerl_utils:ensure_clojerl(),
 
   try
-    [test(AppInfo, Opts) || AppInfo <- Apps]
+    [check_result(test(AppInfo, Opts)) || AppInfo <- Apps]
   catch ?WITH_STACKTRACE(_, Reason, Stacktrace)
       rebar_api:debug( "Stacktrace:~n~s"
                      , [clj_utils:format_stacktrace(Stacktrace)]
@@ -67,7 +67,7 @@ format_error(Reason) ->
 %% Internal functions
 %% =============================================================================
 
--spec test(rebar_app_info:t(), [{atom(), any()}]) -> ok.
+-spec test(rebar_app_info:t(), [{atom(), any()}]) -> any().
 test(AppInfo, Opts) ->
   TestDirs  = rebar_app_info:get(AppInfo, clje_test_dirs, ?DEFAULT_TEST_DIRS),
   ok        = code:add_pathsa(TestDirs),
@@ -105,8 +105,7 @@ test(AppInfo, Opts) ->
     _         ->
       rebar_api:debug("Test var: ~s", [clj_rt:str(Var)]),
       'clojure.test':'test-var'(Var)
-  end,
-  ok.
+  end.
 
 -spec find_tests(file:name()) -> ['clojerl.Symbol':type()].
 find_tests(TestDir) ->
@@ -118,3 +117,12 @@ path_to_symbol(Path) ->
   RootnameBin = list_to_binary(Rootname),
   NsName      = clj_utils:resource_to_ns(RootnameBin),
   clj_rt:symbol(NsName).
+
+-spec check_result(any()) -> ok.
+check_result(Result) ->
+  Error = clj_rt:get(Result, error),
+  Fail = clj_rt:get(Result, fail),
+  case Error > 0 orelse Fail > 0 of
+    true  -> rebar_api:abort("Errors: ~p - Fails: ~p", [Error, Fail]);
+    false -> ok
+  end.
