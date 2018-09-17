@@ -1,7 +1,23 @@
 # Change Log
 
-## [Unreleased](https://github.com/clojerl/rebar3_clojerl/tree/0.6.3)
+## [0.6.4](https://github.com/clojerl/rebar3_clojerl/tree/0.6.4)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.3...0.6.4)
+
+**Fixed bugs:**
+
+- Exit with failure when there are failed tests or errors [\#36](https://github.com/clojerl/rebar3_clojerl/issues/36)
+
+**Closed issues:**
+
+- OTP 21 compatible [\#34](https://github.com/clojerl/rebar3_clojerl/issues/34)
+
+**Merged pull requests:**
+
+- \[Closes \#36\] Check failures or errors and exit if any [\#37](https://github.com/clojerl/rebar3_clojerl/pull/37) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#34\] WITH\_STACKTRACE macro for OTP 21 [\#35](https://github.com/clojerl/rebar3_clojerl/pull/35) ([jfacorro](https://github.com/jfacorro))
+
+## [0.6.3](https://github.com/clojerl/rebar3_clojerl/tree/0.6.3) (2018-08-27)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.2...0.6.3)
 
 **Fixed bugs:**
