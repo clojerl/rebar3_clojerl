@@ -1,7 +1,7 @@
 {description, "Complete structure for a Clojerl application."}.
 {variables, [
     {name, "mylib", "Name of the Clojerl application"},
-    {desc, "An Clojerl application", "Short description of the app"}
+    {desc, "A Clojerl application", "Short description of the app"}
 ]}.
 {template, "app.clje.tpl", "{{name}}/src/{{name}}/app.clje"}.
 {template, "sup.clje.tpl", "{{name}}/src/{{name}}/sup.clje"}.
