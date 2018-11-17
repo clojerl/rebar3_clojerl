@@ -1,5 +1,4 @@
-(ns {{name}}.sup
-  (:require [{{name}}.sup :as sup]))
+(ns {{name}}.sup)
 
 (def sup-flags #erl{:strategy  :one_for_one
                     :intensity 1
