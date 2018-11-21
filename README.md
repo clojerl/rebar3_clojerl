@@ -3,18 +3,16 @@ rebar3_clojerl
 
 Compile clojerl projects
 
-Build
------
+## Build
 
     $ rebar3 compile
 
-Use
----
+## Use
 
 Add the plugin to your rebar config:
 
     { plugins
-    , [ {rebar3_clojerl, ".*", {git, "https://github.com/clojerl/rebar3_clojerl", {tag, "0.1.0"}}}
+    , [ {rebar3_clojerl, ".*", {git, "https://github.com/clojerl/rebar3_clojerl", {tag, "0.6.5"}}}
       ]
     }.
 
@@ -32,3 +30,28 @@ To get a list of all available tasks for the plugin run:
     clojerl <task>:
       compile        Compile clojerl project
       repl           Start a clojerl repl
+
+
+### Install globally
+
+`rebar3` also allows you to install [plugins globally][rebar3-plugins] through its
+configuration file `~/.config/rebar3/rebar.config`.
+
+By adding the following entry in the `plugins` section of the global `rebar.config`
+you will be able to use the plugin to build your project or create a new one through
+with the available [template](#template).
+
+    {rebar3_clojerl, ".*", {git, "https://github.com/clojerl/rebar3_clojerl", {tag, "0.6.6"}}}
+
+## Template
+
+When the plugin is [installed globally](#install-globally) you can use its template
+to create a new Clojerl application.
+
+    rebar3 new clojerl_app awesome
+
+Because of how Clojerl (and Clojure) processes dashes for namespace names, and
+current limitations of the templating mechanism, you can't include dashes in your
+application's name. It's sad, I know. :(
+
+[rebar3-plugins]: https://www.rebar3.org/docs/using-available-plugins
