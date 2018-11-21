@@ -1,7 +1,19 @@
 # Change Log
 
-## [0.6.4](https://github.com/clojerl/rebar3_clojerl/tree/0.6.4)
+## [0.6.5](https://github.com/clojerl/rebar3_clojerl/tree/0.6.5)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.4...0.6.5)
+
+**Closed issues:**
+
+- Add template for a clojerl project  [\#38](https://github.com/clojerl/rebar3_clojerl/issues/38)
+
+**Merged pull requests:**
+
+- \[\#38\] Mention templates in README [\#40](https://github.com/clojerl/rebar3_clojerl/pull/40) ([jfacorro](https://github.com/jfacorro))
+- \[\#38\] add template [\#39](https://github.com/clojerl/rebar3_clojerl/pull/39) ([jfacorro](https://github.com/jfacorro))
+
+## [0.6.4](https://github.com/clojerl/rebar3_clojerl/tree/0.6.4) (2018-09-17)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.3...0.6.4)
 
 **Fixed bugs:**
