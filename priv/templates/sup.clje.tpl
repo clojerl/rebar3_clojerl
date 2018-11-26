@@ -7,8 +7,8 @@
 (def child-specs #erl())
 
 (defn start-link []
-  (supervisor/start_link #erl[:local :try-clojerl.sup]
-                         :try-clojerl.sup
+  (supervisor/start_link #erl[:local :{{name}}.sup]
+                         :{{name}}.sup
                          #erl()))
 
 (defn init [_]
