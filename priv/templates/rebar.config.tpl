@@ -1,7 +1,7 @@
 {erl_opts, [debug_info]}.
 
 { deps
-, [ {clojerl, {git, "https://github.com/clojerl/clojerl.git", {branch, "0.4.0"}}}
+, [ {clojerl, {git, "https://github.com/clojerl/clojerl.git", {tag, "0.4.0"}}}
   ]
 }.
 
