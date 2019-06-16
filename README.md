@@ -61,8 +61,18 @@ to create a new Clojerl application.
 
     rebar3 new clojerl_app awesome
 
-Because of how Clojerl (and Clojure) processes dashes for namespace names, and
-current limitations of the templating mechanism, you can't include dashes in your
+### Building the generated application
+
+There is a [provider_hook][rebar3-provider-hooks] in the generated application that
+will run `rebar3 clojerl compile` after running `rebar3 compile`. Therefore the current
+way of building a Clojerl application is by running `rebar3 compile` and **not**
+`rebar3 clojerl compile`.
+
+### Application name
+
+Because of how Clojerl (and Clojure) processes dashes for namespace names,
+and current limitations of the templating mechanism, you can't include dashes in your
 application's name. It's sad, I know. :(
 
 [rebar3-plugins]: https://www.rebar3.org/docs/using-available-plugins
+[rebar3-provider-hooks]: https://www.rebar3.org/docs/configuration#section-provider-hooks
