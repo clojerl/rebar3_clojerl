@@ -27,7 +27,10 @@ init(State) ->
                               , {module,     ?MODULE}
                               , {bare,       true}
                               , {deps,       ?DEPS}
-                              , {example,    "rebar3 clojerl repl"}
+                              , { example
+                                , "rebar3 clojerl repl "
+                                  "--sname foo --apps bar,baz"
+                                }
                               , {opts,       Opts}
                               , {short_desc, "Start a clojerl repl"}
                               , {desc,       "Start a clojerl repl"}
