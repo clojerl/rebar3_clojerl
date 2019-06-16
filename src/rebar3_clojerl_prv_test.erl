@@ -23,7 +23,11 @@ init(State) ->
                               , {module,     ?MODULE}
                               , {bare,       true}
                               , {deps,       ?DEPS}
-                              , {example,    "rebar3 clojerl test"}
+                              , { example
+                                , "rebar3 clojerl test "
+                                  "--ns clojerl.test-clojure.control "
+                                  "--var test-when"
+                                }
                               , {opts,       Opts}
                               , {short_desc, "Test clojerl project"}
                               , {desc,       "Test clojerl project"}

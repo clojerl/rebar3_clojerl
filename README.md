@@ -30,7 +30,18 @@ To get a list of all available tasks for the plugin run:
     clojerl <task>:
       compile        Compile clojerl project
       repl           Start a clojerl repl
+      test           Test clojerl project
 
+For each of these you can then get more details and available options by running
+for example:
+
+    $ rebar3 help clojerl repl
+    Start a clojerl repl
+	Usage: rebar3 clojerl repl [--apps <apps>] [--sname <sname>]
+
+	  --apps   List of applications that should be started separated by commas
+	           (e.g. --apps app1,app2,app3).
+	  --sname  Erlang node name.
 
 ### Install globally
 
@@ -50,8 +61,18 @@ to create a new Clojerl application.
 
     rebar3 new clojerl_app awesome
 
-Because of how Clojerl (and Clojure) processes dashes for namespace names, and
-current limitations of the templating mechanism, you can't include dashes in your
+### Building the generated application
+
+There is a [provider_hook][rebar3-provider-hooks] in the generated application that
+will run `rebar3 clojerl compile` after running `rebar3 compile`. Therefore the current
+way of building a Clojerl application is by running `rebar3 compile` and **not**
+`rebar3 clojerl compile`.
+
+### Application name
+
+Because of how Clojerl (and Clojure) processes dashes for namespace names,
+and current limitations of the templating mechanism, you can't include dashes in your
 application's name. It's sad, I know. :(
 
 [rebar3-plugins]: https://www.rebar3.org/docs/using-available-plugins
+[rebar3-provider-hooks]: https://www.rebar3.org/docs/configuration#section-provider-hooks
