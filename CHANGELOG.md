@@ -1,7 +1,21 @@
 # Change Log
 
-## [0.6.5](https://github.com/clojerl/rebar3_clojerl/tree/0.6.5)
+## [0.6.6](https://github.com/clojerl/rebar3_clojerl/tree/0.6.6)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.5...0.6.6)
+
+**Closed issues:**
+
+- Update documentation [\#42](https://github.com/clojerl/rebar3_clojerl/issues/42)
+- Define sane defaults when there is no rebar.config [\#11](https://github.com/clojerl/rebar3_clojerl/issues/11)
+
+**Merged pull requests:**
+
+- clojerl test task is run in the test profile [\#44](https://github.com/clojerl/rebar3_clojerl/pull/44) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#42\] update documentation and template [\#43](https://github.com/clojerl/rebar3_clojerl/pull/43) ([jfacorro](https://github.com/jfacorro))
+- Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
+
+## [0.6.5](https://github.com/clojerl/rebar3_clojerl/tree/0.6.5) (2018-11-21)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.4...0.6.5)
 
 **Closed issues:**
