@@ -31,6 +31,7 @@ init(State) ->
                               , {opts,       Opts}
                               , {short_desc, "Test clojerl project"}
                               , {desc,       "Test clojerl project"}
+                              , {profiles,   [test]}
                               ]),
   {ok, rebar_state:add_provider(State, Provider)}.
 
