@@ -2,14 +2,14 @@
  [{description, "Compile clojerl projects"},
   {vsn, git},
   {registered, []},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
+  {applications, [kernel, stdlib]},
   {env,[]},
   {modules, []},
 
-  {maintainers, []},
-  {licenses, []},
-  {links, []}
+  {licenses, ["Apache 2.0"]},
+  { links
+  , [ {"GitHub", "https://github.com/clojerl/rebar3_clojerl"}
+    , {"Clojerl", "https://github.com/clojerl/clojerl"}
+    ]
+  }
  ]}.

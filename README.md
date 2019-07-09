@@ -43,6 +43,30 @@ for example:
 	           (e.g. --apps app1,app2,app3).
 	  --sname  Erlang node name.
 
+### rebar.config options
+
+The following options are helpful for handling custom directory structure and/or
+compilation behaviour:
+
+- `clje_src_dirs`: List of directories where Clojerl source is located (default: `["src"]`).
+- `clje_test_dirs`: List of directories where Clojerl tests are located (default: `["test"]`).
+- `clje_compile_first`: List of files that should be compiled first (default: `[]`).
+- `clje_exclude`: List of files that should be excluded from compilation (default: `[]`).
+
+For example, if the Clojerl code was in `src/clj` instead of just `src`, the
+`rebar.config` should include the following entry:
+
+```
+{clje_src_dirs, ["src/clj"]}.
+```
+
+And if we wanted to have the file for namespace `foo.bar` compiled first we would
+also include the entry:
+
+```
+{clj_compile_first, ["foo/bar.clje"]}.
+```
+
 ### Install globally
 
 `rebar3` also allows you to install [plugins globally][rebar3-plugins] through its
