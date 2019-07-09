@@ -43,7 +43,7 @@ for example:
 	           (e.g. --apps app1,app2,app3).
 	  --sname  Erlang node name.
 
-## rebar.config options
+### rebar.config options
 
 The following options are helpful for handling custom directory structure and/or
 compilation behaviour:
