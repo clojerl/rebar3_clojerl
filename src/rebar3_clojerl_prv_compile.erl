@@ -6,6 +6,7 @@
 
 -define(PROVIDER, compile).
 -define(NAMESPACE, clojerl).
+-define(NAMESPACE_PROVIDER, {?NAMESPACE, ?PROVIDER}).
 -define(DEPS, [{default, lock}]).
 
 -type config() :: #{ ebin_dir      => file:name()
@@ -44,17 +45,24 @@ do(State) ->
   AppsPaths   = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- ProjectApps],
   ok          = code:add_pathsa(AppsPaths),
 
-  ok          = rebar3_clojerl_utils:ensure_clojerl(),
-
   Apps0       = Deps1 ++ ProjectApps,
   Config      = #{protocols_dir => protocols_dir(State)},
 
-  %% More than one application might modify existing protocols, so we
-  %% restore the original backed-up protocol modules before compiling.
   try
+    %% More than one application might modify existing protocols, so we
+    %% restore the original backed-up protocol modules before compiling.
     restore_duplicates(DepsPaths),
-    Apps1 = maybe_compile_clojerl(Apps0, Config),
-    [compile(AppInfo, Config) || AppInfo <- Apps1]
+
+    %% Run top level pre hooks
+    Cwd       = rebar_state:dir(State),
+    Providers = rebar_state:providers(State),
+    rebar_hooks:run_all_hooks(Cwd, pre, ?NAMESPACE_PROVIDER, Providers, State),
+
+    Apps1 = compile_clojerl(Apps0, Config, Providers, State),
+    [compile(AppInfo, Config, Providers, State) || AppInfo <- Apps1],
+
+    %% Run top level post hooks
+    rebar_hooks:run_all_hooks(Cwd, post, ?NAMESPACE_PROVIDER, Providers, State)
   after
     backup_duplicates(DepsPaths, Config)
   end,
@@ -89,13 +97,17 @@ protocols_dir(State) ->
       ProtoDir
   end.
 
--spec maybe_compile_clojerl([rebar_app_info:t()], config()) ->
+-spec compile_clojerl( [rebar_app_info:t()]
+                     , config()
+                     , providers:t()
+                     , rebar_state:t()
+                     ) ->
   [rebar_app_info:t()].
-maybe_compile_clojerl(Apps, Config) ->
+compile_clojerl(Apps, Config, Providers, State) ->
   case rebar3_clojerl_utils:find_app(Apps, ?CLOJERL) of
     notfound -> Apps;
     {ok, ClojerlApp} ->
-      compile(ClojerlApp, Config),
+      compile(ClojerlApp, Config, Providers, State),
       Apps -- [ClojerlApp]
   end.
 
@@ -162,8 +174,20 @@ update_app_file({Dir, Filepaths}) ->
     [] -> ok
   end.
 
--spec compile(rebar_app_info:t(), config()) -> boolean().
-compile(AppInfo, Config0) ->
+-spec compile(rebar_app_info:t(), config(), providers:t(), rebar_state:t()) ->
+  boolean().
+compile(AppInfo0, Config0, Providers, State) ->
+  AppDir  = rebar_app_info:dir(AppInfo0),
+  AppInfo = rebar_hooks:run_all_hooks( AppDir
+                                     , pre
+                                     , ?NAMESPACE_PROVIDER
+                                     , Providers
+                                     , AppInfo0
+                                     , State
+                                     ),
+
+  ok      = rebar3_clojerl_utils:ensure_clojerl(),
+
   Graph   = load_graph(AppInfo),
   Config1 = Config0#{graph => Graph},
   AppName = rebar_app_info:name(AppInfo),
@@ -182,6 +206,13 @@ compile(AppInfo, Config0) ->
            should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph)
       ],
       store_graph(AppInfo, Graph),
+      rebar_hooks:run_all_hooks( AppDir
+                               , post
+                               , ?NAMESPACE_PROVIDER
+                               , Providers
+                               , AppInfo
+                               , State
+                               ),
       true
   after
     digraph:delete(Graph)
