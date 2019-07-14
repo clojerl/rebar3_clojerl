@@ -71,11 +71,23 @@ format_error(Reason) ->
 
 -spec protocols_dir(rebar_state:t()) -> file:name().
 protocols_dir(State) ->
-  %% Get the first application from this project.
-  [AppInfo | _] = rebar_state:project_apps(State),
-  ProtoDir      = rebar_app_info:ebin_dir(AppInfo),
-  rebar_api:debug("Protocols dir: ~s", [ProtoDir]),
-  ProtoDir.
+  case rebar_state:project_apps(State) of
+    %% Get the first application from this project.
+    [AppInfo | _] ->
+      ProtoDir = rebar_app_info:ebin_dir(AppInfo),
+      rebar_api:debug("Protocols dir: ~s", [ProtoDir]),
+      ProtoDir;
+    %% When there are no applications use Clojerl's ebin
+    [] ->
+      Deps = rebar_state:all_deps(State),
+      {ok, ClojerlApp} = rebar3_clojerl_utils:find_app(Deps, ?CLOJERL),
+      ProtoDir = rebar_app_info:ebin_dir(ClojerlApp),
+      rebar_api:debug( "No project apps, using Clojerl's "
+                       "ebin as protocol dir: ~s"
+                     , [ProtoDir]
+                     ),
+      ProtoDir
+  end.
 
 -spec maybe_compile_clojerl([rebar_app_info:t()], config()) ->
   [rebar_app_info:t()].
