@@ -1,16 +1,36 @@
 # Change Log
 
-## [0.6.6](https://github.com/clojerl/rebar3_clojerl/tree/0.6.6)
+## [0.6.7](https://github.com/clojerl/rebar3_clojerl/tree/0.6.7)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.6...0.6.7)
+
+**Closed issues:**
+
+- Support almost empty project [\#52](https://github.com/clojerl/rebar3_clojerl/issues/52)
+- Document optional entries for rebar.config [\#46](https://github.com/clojerl/rebar3_clojerl/issues/46)
+
+**Merged pull requests:**
+
+- \[\#50\] Process provider\_hooks for the 'compile' task [\#56](https://github.com/clojerl/rebar3_clojerl/pull/56) ([jfacorro](https://github.com/jfacorro))
+- Add link to hex badge [\#55](https://github.com/clojerl/rebar3_clojerl/pull/55) ([jfacorro](https://github.com/jfacorro))
+- Add hex badge [\#54](https://github.com/clojerl/rebar3_clojerl/pull/54) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#52\] Support starting a repl in an almost empty rebar.config [\#53](https://github.com/clojerl/rebar3_clojerl/pull/53) ([jfacorro](https://github.com/jfacorro))
+- Include basic testing template [\#51](https://github.com/clojerl/rebar3_clojerl/pull/51) ([arpunk](https://github.com/arpunk))
+- Use hex dependency in template [\#49](https://github.com/clojerl/rebar3_clojerl/pull/49) ([jfacorro](https://github.com/jfacorro))
+
+## [0.6.6](https://github.com/clojerl/rebar3_clojerl/tree/0.6.6) (2019-07-09)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.5...0.6.6)
 
 **Closed issues:**
 
+- Document optional entries for rebar.config [\#47](https://github.com/clojerl/rebar3_clojerl/issues/47)
 - Update documentation [\#42](https://github.com/clojerl/rebar3_clojerl/issues/42)
 - Define sane defaults when there is no rebar.config [\#11](https://github.com/clojerl/rebar3_clojerl/issues/11)
 
 **Merged pull requests:**
 
+- \[Closes \#47\] document rebar3.config options [\#48](https://github.com/clojerl/rebar3_clojerl/pull/48) ([jfacorro](https://github.com/jfacorro))
+- Prepare release 0.6.6 [\#45](https://github.com/clojerl/rebar3_clojerl/pull/45) ([jfacorro](https://github.com/jfacorro))
 - clojerl test task is run in the test profile [\#44](https://github.com/clojerl/rebar3_clojerl/pull/44) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#42\] update documentation and template [\#43](https://github.com/clojerl/rebar3_clojerl/pull/43) ([jfacorro](https://github.com/jfacorro))
 - Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
