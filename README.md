@@ -1,6 +1,8 @@
 rebar3_clojerl
 =====
 
+[![Hex.pm](https://img.shields.io/hexpm/v/rebar3_clojerl.svg)]()
+
 Compile clojerl projects
 
 ## Build
