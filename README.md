@@ -1,7 +1,7 @@
 rebar3_clojerl
 =====
 
-[![Hex.pm](https://img.shields.io/hexpm/v/rebar3_clojerl.svg)]()
+[![Hex.pm](https://img.shields.io/hexpm/v/rebar3_clojerl.svg)](https://hex.pm/packages/rebar3_clojerl)
 
 Compile clojerl projects
 
