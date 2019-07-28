@@ -5,18 +5,12 @@ rebar3_clojerl
 
 Compile clojerl projects
 
-## Build
-
-    $ rebar3 compile
-
 ## Use
 
-Add the plugin to your rebar config:
+Add the plugin to your `rebar.config` (along with `clojerl` as a dependency):
 
-    { plugins
-    , [ {rebar3_clojerl, ".*", {git, "https://github.com/clojerl/rebar3_clojerl", {tag, "0.6.5"}}}
-      ]
-    }.
+    {deps, [clojerl]}.
+    {plugins, [rebar3_clojerl]}.
 
 Then just call the plugin directly in an existing application:
 
@@ -69,16 +63,24 @@ also include the entry:
 {clj_compile_first, ["foo/bar.clje"]}.
 ```
 
+## Plugin Development
+
+Run the following commands to checkout the repository and build the plugin:
+
+    git checkout https://github.com/clojerl/rebar3_clojerl
+    cd rebar3_clojerl
+    rebar3 compile
+
 ### Install globally
 
 `rebar3` also allows you to install [plugins globally][rebar3-plugins] through its
 configuration file `~/.config/rebar3/rebar.config`.
 
-By adding the following entry in the `plugins` section of the global `rebar.config`
-you will be able to use the plugin to build your project or create a new one through
-with the available [template](#template).
+By adding the following entry in the global `rebar.config` you will be able to use
+the plugin to build your project or create a new one with the available
+[template](#template).
 
-    {rebar3_clojerl, ".*", {git, "https://github.com/clojerl/rebar3_clojerl", {tag, "0.6.6"}}}
+    {plugins, [rebar3_clojerl]}.
 
 ## Template
 
@@ -89,10 +91,7 @@ to create a new Clojerl application.
 
 ### Building the generated application
 
-There is a [provider_hook][rebar3-provider-hooks] in the generated application that
-will run `rebar3 clojerl compile` after running `rebar3 compile`. Therefore the current
-way of building a Clojerl application is by running `rebar3 compile` and **not**
-`rebar3 clojerl compile`.
+Running `rebar3 clojerl compile` will build the application.
 
 ### Application name
 
