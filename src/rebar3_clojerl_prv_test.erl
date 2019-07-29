@@ -74,13 +74,16 @@ format_error(Reason) ->
 
 -spec test(rebar_app_info:t(), [{atom(), any()}]) -> any().
 test(AppInfo, Opts) ->
-  TestDirs  = rebar_app_info:get(AppInfo, clje_test_dirs, ?DEFAULT_TEST_DIRS),
-  ok        = code:add_pathsa(TestDirs),
+  OutDir       = rebar_app_info:out_dir(AppInfo),
+  CljeTestDirs = rebar_app_info:get(AppInfo, clje_test_dirs, ?DEFAULT_TEST_DIRS),
+  TestDirPaths = [filename:join(OutDir, Dir) || Dir <- CljeTestDirs],
+  ok           = code:add_pathsa(TestDirPaths),
+
   NsOpt     = proplists:get_value(ns, Opts, undefined),
   VarOpt    = proplists:get_value(var, Opts, undefined),
 
   NsSyms0   = case NsOpt of
-                undefined -> lists:flatmap(fun find_tests/1, TestDirs);
+                undefined -> lists:flatmap(fun find_tests/1, TestDirPaths);
                 NsOpt     -> [clj_rt:symbol(list_to_binary(NsOpt))]
               end,
 
