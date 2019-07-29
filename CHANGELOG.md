@@ -1,7 +1,19 @@
 # Change Log
 
-## [0.6.7](https://github.com/clojerl/rebar3_clojerl/tree/0.6.7)
+## [0.6.8](https://github.com/clojerl/rebar3_clojerl/tree/0.6.8)
 
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.7...0.6.8)
+
+**Closed issues:**
+
+- Avoid adding clje test dirs twice to code path [\#57](https://github.com/clojerl/rebar3_clojerl/issues/57)
+- test command should compile the project [\#50](https://github.com/clojerl/rebar3_clojerl/issues/50)
+
+**Merged pull requests:**
+
+- \[\#57\] Avoid adding test dirs twice [\#58](https://github.com/clojerl/rebar3_clojerl/pull/58) ([jfacorro](https://github.com/jfacorro))
+
+## [0.6.7](https://github.com/clojerl/rebar3_clojerl/tree/0.6.7) (2019-07-15)
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.6...0.6.7)
 
 **Closed issues:**
