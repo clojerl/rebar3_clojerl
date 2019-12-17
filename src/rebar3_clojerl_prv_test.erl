@@ -131,6 +131,8 @@ check_result(Result) ->
   Error = clj_rt:get(Result, error),
   Fail = clj_rt:get(Result, fail),
   case Error > 0 orelse Fail > 0 of
-    true  -> rebar_api:abort("Errors: ~p - Fails: ~p", [Error, Fail]);
-    false -> ok
+    true ->
+      rebar_api:abort("Errors: ~p - Fails: ~p", [Error, Fail]);
+    _ ->
+      ok
   end.
