@@ -234,7 +234,7 @@ compile_clje(Src, Config) ->
   try
     ok      = 'clojerl.Var':push_bindings(Bindings),
     FullSrc = filename:join(SrcDir, Src),
-    Targets = clj_compiler:compile_file(FullSrc),
+    Targets = clj_compiler:file(FullSrc),
     update_graph(Src, Targets, Graph)
   catch ?WITH_STACKTRACE(_, Reason, Stacktrace)
       rebar_api:debug( "Stacktrace:~n~s"
