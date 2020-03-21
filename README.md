@@ -7,7 +7,8 @@ Compile clojerl projects
 
 ## Use
 
-Add the plugin to your `rebar.config` (along with `clojerl` as a dependency):
+Add the plugin to your `rebar.config` (along with `clojerl` as a
+dependency):
 
     {deps, [clojerl]}.
     {plugins, [rebar3_clojerl]}.
@@ -28,8 +29,8 @@ To get a list of all available tasks for the plugin run:
       repl           Start a clojerl repl
       test           Test clojerl project
 
-For each of these you can then get more details and available options by running
-for example:
+For each of these you can then get more details and available options
+by running for example:
 
     $ rebar3 help clojerl repl
     Start a clojerl repl
@@ -41,23 +42,28 @@ for example:
 
 ### rebar.config options
 
-The following options are helpful for handling custom directory structure and/or
-compilation behaviour:
+These are the available options:
 
-- `clje_src_dirs`: List of directories where Clojerl source is located (default: `["src"]`).
-- `clje_test_dirs`: List of directories where Clojerl tests are located (default: `["test"]`).
-- `clje_compile_first`: List of files that should be compiled first (default: `[]`).
-- `clje_exclude`: List of files that should be excluded from compilation (default: `[]`).
+| Name                 | Description                                                                             |
+|----------------------|-----------------------------------------------------------------------------------------|
+| `clje_src_dirs`      | List of directories where Clojerl source is located (default: `["src"]`).               |
+| `clje_test_dirs`     | List of directories where Clojerl tests are located (default: `["test"]`).              |
+| `clje_compile_first` | List of files that should be compiled first (default: `[]`).                            |
+| `clje_exclude`       | List of files that should be excluded from compilation (default: `[]`).                 |
+| `clje_main`          | String specifying either a fully qualified function or a namespace (e.g. `"foo/main"`). |
 
-For example, if the Clojerl code was in `src/clj` instead of just `src`, the
-`rebar.config` should include the following entry:
+The first four are helpful for handling custom directory structure
+and/or compilation behaviour.
+
+For example, if the Clojerl code was in `src/clj` instead of just
+`src`, the `rebar.config` should include the following entry:
 
 ```
 {clje_src_dirs, ["src/clj"]}.
 ```
 
-And if we wanted to have the file for namespace `foo.bar` compiled first we would
-also include the entry:
+And if we wanted to have the file for namespace `foo.bar` compiled
+first we would also include the entry:
 
 ```
 {clj_compile_first, ["foo/bar.clje"]}.
@@ -65,7 +71,8 @@ also include the entry:
 
 ## Plugin Development
 
-Run the following commands to checkout the repository and build the plugin:
+Run the following commands to checkout the repository and build the
+plugin:
 
     git checkout https://github.com/clojerl/rebar3_clojerl
     cd rebar3_clojerl
@@ -73,19 +80,19 @@ Run the following commands to checkout the repository and build the plugin:
 
 ### Install globally
 
-`rebar3` also allows you to install [plugins globally][rebar3-plugins] through its
-configuration file `~/.config/rebar3/rebar.config`.
+`rebar3` also allows you to install [plugins globally][rebar3-plugins]
+through its configuration file `~/.config/rebar3/rebar.config`.
 
-By adding the following entry in the global `rebar.config` you will be able to use
-the plugin to build your project or create a new one with the available
-[template](#template).
+By adding the following entry in the global `rebar.config` you will be
+able to use the plugin to build your project or create a new one with
+the available [template](#template).
 
     {plugins, [rebar3_clojerl]}.
 
 ## Template
 
-When the plugin is [installed globally](#install-globally) you can use its template
-to create a new Clojerl application.
+When the plugin is [installed globally](#install-globally) you can use
+its template to create a new Clojerl application.
 
     rebar3 new clojerl_app awesome
 
@@ -95,9 +102,9 @@ Running `rebar3 clojerl compile` will build the application.
 
 ### Application name
 
-Because of how Clojerl (and Clojure) processes dashes for namespace names,
-and current limitations of the templating mechanism, you can't include dashes in your
-application's name. It's sad, I know. :(
+Because of how Clojerl (and Clojure) processes dashes for namespace
+names, and current limitations of the templating mechanism, you can't
+include dashes in your application's name. It's sad, I know. :(
 
 [rebar3-plugins]: https://www.rebar3.org/docs/using-available-plugins
 [rebar3-provider-hooks]: https://www.rebar3.org/docs/configuration#section-provider-hooks
