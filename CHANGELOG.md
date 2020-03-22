@@ -1,6 +1,25 @@
-# Change Log
+# Changelog
 
-## [0.6.8](https://github.com/clojerl/rebar3_clojerl/tree/0.6.8)
+## [0.6.9](https://github.com/clojerl/rebar3_clojerl/tree/0.6.9)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.8...0.6.9)
+
+**Fixed bugs:**
+
+- Error generated when providing --var for running a test [\#60](https://github.com/clojerl/rebar3_clojerl/issues/60)
+
+**Closed issues:**
+
+- Add run command [\#65](https://github.com/clojerl/rebar3_clojerl/issues/65)
+
+**Merged pull requests:**
+
+- \[\#65\] Add run command [\#66](https://github.com/clojerl/rebar3_clojerl/pull/66) ([jfacorro](https://github.com/jfacorro))
+- Renamed compile\_file to file [\#64](https://github.com/clojerl/rebar3_clojerl/pull/64) ([jfacorro](https://github.com/jfacorro))
+- \[\#60\] Also handle result from clojure.test/test-var [\#62](https://github.com/clojerl/rebar3_clojerl/pull/62) ([jfacorro](https://github.com/jfacorro))
+- \[\#60\] Also handle result from clojure.test/test-var [\#61](https://github.com/clojerl/rebar3_clojerl/pull/61) ([jfacorro](https://github.com/jfacorro))
+
+## [0.6.8](https://github.com/clojerl/rebar3_clojerl/tree/0.6.8) (2019-07-29)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.7...0.6.8)
 
@@ -11,9 +30,11 @@
 
 **Merged pull requests:**
 
+- Prepare release 0.6.8 [\#59](https://github.com/clojerl/rebar3_clojerl/pull/59) ([jfacorro](https://github.com/jfacorro))
 - \[\#57\] Avoid adding test dirs twice [\#58](https://github.com/clojerl/rebar3_clojerl/pull/58) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.7](https://github.com/clojerl/rebar3_clojerl/tree/0.6.7) (2019-07-15)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.6...0.6.7)
 
 **Closed issues:**
@@ -31,6 +52,7 @@
 - Use hex dependency in template [\#49](https://github.com/clojerl/rebar3_clojerl/pull/49) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.6](https://github.com/clojerl/rebar3_clojerl/tree/0.6.6) (2019-07-09)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.5...0.6.6)
 
 **Closed issues:**
@@ -48,6 +70,7 @@
 - Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
 
 ## [0.6.5](https://github.com/clojerl/rebar3_clojerl/tree/0.6.5) (2018-11-21)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.4...0.6.5)
 
 **Closed issues:**
@@ -60,6 +83,7 @@
 - \[\#38\] add template [\#39](https://github.com/clojerl/rebar3_clojerl/pull/39) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.4](https://github.com/clojerl/rebar3_clojerl/tree/0.6.4) (2018-09-17)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.3...0.6.4)
 
 **Fixed bugs:**
@@ -76,6 +100,7 @@
 - \[Closes \#34\] WITH\_STACKTRACE macro for OTP 21 [\#35](https://github.com/clojerl/rebar3_clojerl/pull/35) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.3](https://github.com/clojerl/rebar3_clojerl/tree/0.6.3) (2018-08-27)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.2...0.6.3)
 
 **Fixed bugs:**
@@ -87,6 +112,7 @@
 - \[Fixes \#32\] Compile order deps [\#33](https://github.com/clojerl/rebar3_clojerl/pull/33) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.2](https://github.com/clojerl/rebar3_clojerl/tree/0.6.2) (2018-08-25)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.1...0.6.2)
 
 **Fixed bugs:**
@@ -98,6 +124,7 @@
 - \[\#30\] Check for Clojerl compilation [\#31](https://github.com/clojerl/rebar3_clojerl/pull/31) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.1](https://github.com/clojerl/rebar3_clojerl/tree/0.6.1) (2018-08-20)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.0...0.6.1)
 
 **Merged pull requests:**
@@ -106,6 +133,7 @@
 - Fix dialyzer warnings [\#27](https://github.com/clojerl/rebar3_clojerl/pull/27) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.6.0](https://github.com/clojerl/rebar3_clojerl/tree/0.6.0) (2018-08-08)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.5.0...0.6.0)
 
 **Merged pull requests:**
@@ -114,6 +142,7 @@
 - Include apps finding clojerl [\#25](https://github.com/clojerl/rebar3_clojerl/pull/25) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.5.0](https://github.com/clojerl/rebar3_clojerl/tree/0.5.0) (2018-07-10)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.4.0...0.5.0)
 
 **Closed issues:**
@@ -125,6 +154,7 @@
 - \[Closes \#12\] Run tests command [\#24](https://github.com/clojerl/rebar3_clojerl/pull/24) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.4.0](https://github.com/clojerl/rebar3_clojerl/tree/0.4.0) (2018-05-20)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.3.0...0.4.0)
 
 **Implemented enhancements:**
@@ -133,15 +163,14 @@
 
 **Fixed bugs:**
 
-- Handle protocol compilation correctly [\#22](https://github.com/clojerl/rebar3_clojerl/issues/22)
 - Compile task doesn't fail on error [\#20](https://github.com/clojerl/rebar3_clojerl/issues/20)
 
 **Merged pull requests:**
 
-- \[Closes \#22\] Handle issues with protocol compilation [\#23](https://github.com/clojerl/rebar3_clojerl/pull/23) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#20\] Abort on compiler error [\#21](https://github.com/clojerl/rebar3_clojerl/pull/21) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0) (2018-04-23)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.2...0.3.0)
 
 **Closed issues:**
@@ -153,6 +182,7 @@
 - \[Closes \#18\] Define \*compile-protocols-path\* as the current project's ebin directory [\#19](https://github.com/clojerl/rebar3_clojerl/pull/19) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.2.2](https://github.com/clojerl/rebar3_clojerl/tree/0.2.2) (2018-03-04)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.1...0.2.2)
 
 **Implemented enhancements:**
@@ -164,6 +194,7 @@
 - Use clj\_utils:stacktrace/1 [\#17](https://github.com/clojerl/rebar3_clojerl/pull/17) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.2.1](https://github.com/clojerl/rebar3_clojerl/tree/0.2.1) (2018-02-08)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.0...0.2.1)
 
 **Merged pull requests:**
@@ -171,6 +202,7 @@
 - \[\#15\] Only print stacktrace when debugging [\#16](https://github.com/clojerl/rebar3_clojerl/pull/16) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.2.0](https://github.com/clojerl/rebar3_clojerl/tree/0.2.0) (2017-12-09)
+
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.1.0...0.2.0)
 
 **Implemented enhancements:**
@@ -182,6 +214,9 @@
 - \[Closes \#3\] Repl options [\#13](https://github.com/clojerl/rebar3_clojerl/pull/13) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.1.0](https://github.com/clojerl/rebar3_clojerl/tree/0.1.0) (2017-10-29)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/8f6ddea06be9d18b5ab36ce22d44fab8d1507e56...0.1.0)
+
 **Implemented enhancements:**
 
 - Show stacktrace on error [\#6](https://github.com/clojerl/rebar3_clojerl/issues/6)
@@ -197,6 +232,7 @@
 
 **Merged pull requests:**
 
+- \[Closes \#22\] Handle issues with protocol compilation [\#23](https://github.com/clojerl/rebar3_clojerl/pull/23) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#4\] Don't recompile unmodified source files \[Closes \#8\] Compile deps [\#9](https://github.com/clojerl/rebar3_clojerl/pull/9) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#6\] Include stacktrace in errors [\#7](https://github.com/clojerl/rebar3_clojerl/pull/7) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#2\] Print compile-time errors [\#5](https://github.com/clojerl/rebar3_clojerl/pull/5) ([jfacorro](https://github.com/jfacorro))
@@ -204,4 +240,4 @@
 
 
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
