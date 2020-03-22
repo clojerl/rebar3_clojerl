@@ -52,6 +52,7 @@ format_error(Reason) ->
 
 -spec repl(rebar_state:t()) -> ok.
 repl(State) ->
+  maybe_restart_clojerl(),
   Bindings  = #{<<"#'clojure.core/*compile-files*">> => false},
 
   DepsPaths = rebar_state:code_paths(State, all_deps),
@@ -66,6 +67,20 @@ repl(State) ->
     'clojure.main':main([<<"-r">>])
   after
     ok = 'clojerl.Var':pop_bindings()
+  end.
+
+%% @doc Restarts the clojerl application when clje.user doesn't
+%% refer vars from clojure.core.
+-spec maybe_restart_clojerl() -> ok.
+maybe_restart_clojerl() ->
+  CljeUserSym = clj_rt:symbol(<<"clje.user">>),
+  CljeUserNs = 'clojerl.Namespace':find(CljeUserSym),
+  SeqSym = clj_rt:symbol(<<"seq">>),
+  case 'clojerl.Namespace':find_var(CljeUserNs, SeqSym) of
+    undefined ->
+      application:stop(clojerl),
+      clojerl:start();
+    _ -> ok
   end.
 
 -spec maybe_start_apps(opts()) -> ok.
