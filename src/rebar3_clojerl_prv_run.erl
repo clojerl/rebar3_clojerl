@@ -59,13 +59,19 @@ run(State) ->
   %% Resolve module and functions
   {Opts, _} = rebar_state:command_parsed_args(State),
   Apps = rebar_state:project_apps(State),
-  {M, F} = resolve_main(Apps, Opts),
+  Main = resolve_main(Apps, Opts),
 
   %% Resolve arguments
   RawArgs = rebar_state:command_args(State),
   Args = resolve_args(RawArgs),
 
-  apply(M, F, Args).
+  try
+    clj_rt:apply(Main, Args)
+  catch _:Reason ->
+      rebar_api:error( "Error when calling ~s with ~p arguments: ~s"
+                     , [clj_rt:str(Main), length(Args), clj_rt:str(Reason)]
+                     )
+  end.
 
 -spec resolve_main([rebar_app_info:t()], opts()) -> ok.
 resolve_main(Apps, Opts) ->
@@ -73,13 +79,21 @@ resolve_main(Apps, Opts) ->
   case proplists:get_value(main, Opts, CljeMain) of
     undefined ->
       rebar_api:abort("No main function or namespace specified", []);
-    MainStr ->
-      case string:tokens(MainStr, "/") of
+    Main ->
+      case string:tokens(Main, "/") of
         [Namespace] ->
-          {list_to_atom(Namespace), '-main'};
+          resolve_var(Namespace, "-main");
         [Namespace, Function] ->
-          {list_to_atom(Namespace), list_to_atom(Function)}
+          resolve_var(Namespace, Function)
       end
+  end.
+
+-spec resolve_var(string(), string()) -> 'clojerl.Var':type().
+resolve_var(Ns, Name) ->
+  VarSym = clj_rt:symbol(list_to_binary(Ns), list_to_binary(Name)),
+  case 'clojure.core':'find-var'(VarSym) of
+    undefined -> rebar_api:error("~s/~s not found", [Ns, Name]);
+    Var       -> Var
   end.
 
 -spec find_clje_main([rebar_app_info:t()]) -> string().
