@@ -237,11 +237,12 @@ compile_clje(Src, Config) ->
     Targets = clj_compiler:file(FullSrc),
     update_graph(Src, Targets, Graph)
   catch ?WITH_STACKTRACE(_, Reason, Stacktrace)
-      rebar_api:debug( "Stacktrace:~n~s"
-                     , [clj_utils:format_stacktrace(Stacktrace)]
-                     ),
-      rebar_api:abort( "Error while compiling ~s: ~s"
-                     , [Src, clj_rt:str(Reason)]
+      rebar_api:abort( "Error while compiling ~s: ~s~n"
+                       "Stacktrace:~n~s"
+                     , [ Src
+                       , clj_rt:str(Reason)
+                       , [clj_utils:format_stacktrace(Stacktrace)]
+                       ]
                      )
   after
     ok = 'clojerl.Var':pop_bindings()
