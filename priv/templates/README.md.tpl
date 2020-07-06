@@ -1,12 +1,12 @@
 {{name}}
 =====
 
-{{desc}}
+{{description}}
 
 Build
 -----
 
-    $ rebar3 compile
+    $ rebar3 clojerl compile
 
 Start a REPL
 ----
