@@ -93,10 +93,15 @@ the available [template](#template).
 
     {plugins, [rebar3_clojerl]}.
 
-## Template
+## Templates
 
 When the plugin is [installed globally](#install-globally) you can use
-its template to create a new Clojerl application.
+any of the available templates:
+
+* `clojerl_app`: create a Clojerl OTP application.
+* `clojerl_escript`: create a Clojerl escript.
+
+For example:
 
     rebar3 new clojerl_app awesome
 
