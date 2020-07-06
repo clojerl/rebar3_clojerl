@@ -1,7 +1,7 @@
 {{name}}
 =====
 
-{{desc}}
+{{description}}
 
 Build
 -----
