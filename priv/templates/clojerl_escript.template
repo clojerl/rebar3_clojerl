@@ -1,0 +1,11 @@
+{description, "Complete Clojerl escriptized application structure"}.
+{variables, [
+    {name, "my_clojerl_escript", "Name of the Clojerl application"},
+    {description, "A Clojerl escript", "Short description of the app"}
+]}.
+{template, "name.clje.tpl", "{{name}}/src/{{name}}.clje"}.
+{template, "escript.app.src.tpl", "{{name}}/src/{{name}}.app.src"}.
+{template, "escript.rebar.config.tpl", "{{name}}/rebar.config"}.
+{template, "gitignore.tpl", "{{name}}/.gitignore"}.
+{template, "LICENSE.tpl", "{{name}}/LICENSE"}.
+{template, "escript.README.md.tpl", "{{name}}/README.md"}.
