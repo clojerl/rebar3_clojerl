@@ -21,13 +21,17 @@ Then just call the plugin directly in an existing application:
 
 To get a list of all available tasks for the plugin run:
 
-    $ rebar3 help clojerl
-    ===> Compiling rebar3_clojerl
+```
+$ rebar3 help clojerl
+===> Compiling rebar3_clojerl
 
-    clojerl <task>:
-      compile        Compile clojerl project
-      repl           Start a clojerl repl
-      test           Test clojerl project
+clojerl <task>:
+  compile           Compile clojerl project
+  escriptize        Generate escript archive.
+  repl              Start a clojerl repl
+  run               Run the project's -main function.
+  test              Test clojerl project
+```
 
 For each of these you can then get more details and available options
 by running for example:
