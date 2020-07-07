@@ -1,6 +1,34 @@
 # Changelog
 
-## [0.7.0](https://github.com/clojerl/rebar3_clojerl/tree/0.7.0)
+## [0.8.0](https://github.com/clojerl/rebar3_clojerl/tree/0.8.0)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.7.0...0.8.0)
+
+**Implemented enhancements:**
+
+- Include stacktrace on error  [\#75](https://github.com/clojerl/rebar3_clojerl/issues/75)
+- Add escriptize command [\#67](https://github.com/clojerl/rebar3_clojerl/issues/67)
+- Create template for creating escripts [\#63](https://github.com/clojerl/rebar3_clojerl/issues/63)
+
+**Fixed bugs:**
+
+- Run command fails with more than one argument [\#73](https://github.com/clojerl/rebar3_clojerl/issues/73)
+- repl command crashes on first compilation on OTP 19 [\#72](https://github.com/clojerl/rebar3_clojerl/issues/72)
+
+**Closed issues:**
+
+- Release support? [\#79](https://github.com/clojerl/rebar3_clojerl/issues/79)
+- Generate .app.src from project.clj [\#10](https://github.com/clojerl/rebar3_clojerl/issues/10)
+
+**Merged pull requests:**
+
+- \[\#79\] Release template and command [\#80](https://github.com/clojerl/rebar3_clojerl/pull/80) ([jfacorro](https://github.com/jfacorro))
+- \[\#63\] escript template [\#78](https://github.com/clojerl/rebar3_clojerl/pull/78) ([jfacorro](https://github.com/jfacorro))
+- \[\#67\] Add escriptize command [\#77](https://github.com/clojerl/rebar3_clojerl/pull/77) ([jfacorro](https://github.com/jfacorro))
+- \[\#75\] Include stacktrace on compile error [\#76](https://github.com/clojerl/rebar3_clojerl/pull/76) ([jfacorro](https://github.com/jfacorro))
+- \[\#73\] Resolve var and then apply the arguments [\#74](https://github.com/clojerl/rebar3_clojerl/pull/74) ([jfacorro](https://github.com/jfacorro))
+
+## [0.7.0](https://github.com/clojerl/rebar3_clojerl/tree/0.7.0) (2020-03-22)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.8...0.7.0)
 
@@ -15,6 +43,7 @@
 
 **Merged pull requests:**
 
+- Prepare release 0.7.0 [\#71](https://github.com/clojerl/rebar3_clojerl/pull/71) ([jfacorro](https://github.com/jfacorro))
 - \[\#69\] Restart clojerl before starting the REPL when clje.user doesn't refer vars from clojure.core [\#70](https://github.com/clojerl/rebar3_clojerl/pull/70) ([jfacorro](https://github.com/jfacorro))
 - \[\#65\] Add run command [\#66](https://github.com/clojerl/rebar3_clojerl/pull/66) ([jfacorro](https://github.com/jfacorro))
 - Renamed compile\_file to file [\#64](https://github.com/clojerl/rebar3_clojerl/pull/64) ([jfacorro](https://github.com/jfacorro))
@@ -183,7 +212,6 @@
 **Merged pull requests:**
 
 - \[Closes \#18\] Define \*compile-protocols-path\* as the current project's ebin directory [\#19](https://github.com/clojerl/rebar3_clojerl/pull/19) ([jfacorro](https://github.com/jfacorro))
-- Use clj\_utils:stacktrace/1 [\#17](https://github.com/clojerl/rebar3_clojerl/pull/17) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.2.2](https://github.com/clojerl/rebar3_clojerl/tree/0.2.2) (2018-03-04)
 
@@ -192,6 +220,10 @@
 **Implemented enhancements:**
 
 - Print all of stacktrace on error only when debugging  [\#15](https://github.com/clojerl/rebar3_clojerl/issues/15)
+
+**Merged pull requests:**
+
+- Use clj\_utils:stacktrace/1 [\#17](https://github.com/clojerl/rebar3_clojerl/pull/17) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.2.1](https://github.com/clojerl/rebar3_clojerl/tree/0.2.1) (2018-02-08)
 

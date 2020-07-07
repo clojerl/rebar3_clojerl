@@ -28,6 +28,7 @@ $ rebar3 help clojerl
 clojerl <task>:
   compile           Compile clojerl project
   escriptize        Generate escript archive.
+  release           Build release of Clojerl project.
   repl              Start a clojerl repl
   run               Run the project's -main function.
   test              Test clojerl project
@@ -100,6 +101,7 @@ any of the available templates:
 
 * `clojerl_app`: create a Clojerl OTP application.
 * `clojerl_escript`: create a Clojerl escript.
+* `clojerl_release`: create a Clojerl release.
 
 For example:
 
