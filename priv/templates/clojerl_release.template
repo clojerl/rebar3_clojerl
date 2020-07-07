@@ -1,0 +1,19 @@
+{description, "Clojerl release structure for executable programs"}.
+{variables, [
+    {name, "my_clojerl_release", "Name of the Clojerl release"},
+    {description, "A Clojerl application", "Short description of the app"}
+]}.
+
+{template, "README.md.tpl", "{{name}}/README.md"}.
+{template, "LICENSE.tpl", "{{name}}/LICENSE"}.
+{template, "release.rebar.config.tpl", "{{name}}/rebar.config"}.
+{template, "gitignore.tpl", "{{name}}/.gitignore"}.
+
+{template, "core.clje.tpl", "{{name}}/src/{{name}}/core.clje"}.
+{template, "app.clje.tpl", "{{name}}/src/{{name}}/app.clje"}.
+{template, "sup.clje.tpl", "{{name}}/src/{{name}}/sup.clje"}.
+{template, "app.src.tpl", "{{name}}/src/{{name}}.app.src"}.
+{template, "core_test.clje.tpl", "{{name}}/test/{{name}}/core_test.clje"}.
+
+{template, "sys.config.tpl", "{{name}}/config/sys.config"}.
+{template, "vm.args.tpl", "{{name}}/config/vm.args"}.
