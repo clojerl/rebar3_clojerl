@@ -7,6 +7,7 @@
         , find_app/2
         , filter_app/2
         , maybe_set_sname/1
+        , update_app_file/1
         ]).
 
 -type opts() :: [{atom(), any()}].
@@ -18,6 +19,42 @@ ensure_clojerl() ->
       ok = clojerl:start();
     {error, Reason} ->
       rebar_api:abort("Application Clojerl could not be started: ~p", [Reason])
+  end.
+
+%% @doc Updates the list of modules in the .app file for the specified
+%% directory.
+%%
+%% The .app file will be update to include all modules in its
+%% `modules' entry. The modules listed are resolved by looking for all
+%% files with the extension `.beam' in `Dir'.
+-spec update_app_file(file:name()) -> ok.
+update_app_file(Dir) ->
+  case rebar_utils:find_files(Dir, ".app$", false) of
+    [AppFile] ->
+      {ok, [{application, AppName, AppDetail0}]} = file:consult(AppFile),
+
+      BeamPaths = rebar_utils:find_files(Dir, ".beam$", false),
+      Modules   = [ list_to_atom(filename:basename(Path, ".beam"))
+                    || Path <- BeamPaths
+                  ],
+      AppDetail1  = lists:keyreplace( modules
+                                    , 1
+                                    , AppDetail0
+                                    , {modules, Modules}
+                                    ),
+      SpecBefore = io_lib:format("~p.\n", [{application, AppName, AppDetail0}]),
+      SpecAfter = io_lib:format("~p.\n", [{application, AppName, AppDetail1}]),
+
+      rebar_api:debug("Updating app file for ~p", [AppName]),
+      rebar_api:debug("~p.app (BEFORE):~n~s", [AppName, SpecBefore]),
+      rebar_api:debug("~p.app (AFTER):~n~s", [AppName, SpecAfter]),
+
+      ok = rebar_file_utils:write_file_if_contents_differ( AppFile
+                                                         , SpecAfter
+                                                         , utf8
+                                                         ),
+      ok;
+    [] -> ok
   end.
 
 -spec all_apps(rebar_state:t()) -> [rebar_app_info:t()].
