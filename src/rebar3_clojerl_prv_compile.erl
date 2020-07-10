@@ -117,24 +117,21 @@ backup_duplicates(DepsDirs, Config) ->
   BeamFilepaths = rebar_utils:find_files(ProtoDir, ".beam$"),
   BeamFilenames = [filename:basename(F) || F <- BeamFilepaths],
 
-  Dirs    = DepsDirs -- [ProtoDir],
+  Dirs = DepsDirs -- [ProtoDir],
   rebar_api:debug("Finding duplicates for:~n~p~nin~n~p", [BeamFilenames, Dirs]),
-  Deleted = [backup_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
+  [backup_duplicates_from_dir(BeamFilenames, Dir) || Dir <- Dirs],
+  ok.
 
-  ok      = lists:foreach(fun update_app_file/1, Deleted).
-
--spec backup_duplicates_from_dir([file:name()], file:name()) ->
-  {file:name(), [file:name()]}.
+-spec backup_duplicates_from_dir([file:name()], file:name()) -> [file:name()].
 backup_duplicates_from_dir(BeamFilenames, Dir) ->
-  Filepaths = [ begin
-                  rebar_api:debug("Backup duplicate ~s", [F]),
-                  ok = file:rename(F, F ++ ".backup"),
-                  F
-                end
-                || F <- rebar_utils:find_files(Dir, ".beam$"),
-                   lists:member(filename:basename(F), BeamFilenames)
-              ],
-  {Dir, Filepaths}.
+  [ begin
+      rebar_api:debug("Backup duplicate ~s", [F]),
+      ok = file:rename(F, F ++ ".backup"),
+      F
+    end
+    || F <- rebar_utils:find_files(Dir, ".beam$"),
+       lists:member(filename:basename(F), BeamFilenames)
+  ].
 
 -spec restore_duplicates([file:name()]) -> ok.
 restore_duplicates(Dirs) ->
@@ -147,32 +144,6 @@ restore_duplicates(Dirs) ->
        Path <- rebar_utils:find_files(Dir, ".backup$")
   ],
   ok.
-
--spec update_app_file({file:name(), [file:name()]}) -> ok.
-update_app_file({_Dir, []}) ->
-  ok;
-update_app_file({Dir, Filepaths}) ->
-  case rebar_utils:find_files(Dir, ".app$", false) of
-    [AppFile] ->
-      DeletedModules = [ list_to_atom(filename:basename(Path, ".beam"))
-                         || Path <- Filepaths
-                       ],
-      {ok, [{application, AppName, AppDetail0}]} = file:consult(AppFile),
-      rebar_api:debug("Updating app file for ~p", [AppName]),
-      rebar_api:debug("Removing modules:~n~p", [DeletedModules]),
-      AppModules0 = proplists:get_value(modules, AppDetail0, []),
-      AppModules1 = AppModules0 -- DeletedModules,
-
-      AppDetail1  = lists:keyreplace( modules
-                                    , 1
-                                    , AppDetail0
-                                    , {modules, AppModules1}
-                                    ),
-      Spec = io_lib:format("~p.\n", [{application, AppName, AppDetail1}]),
-      ok = rebar_file_utils:write_file_if_contents_differ(AppFile, Spec, utf8),
-      ok;
-    [] -> ok
-  end.
 
 -spec compile(rebar_app_info:t(), config(), providers:t(), rebar_state:t()) ->
   boolean().
@@ -364,7 +335,7 @@ clje_compile_first(AppInfo) ->
   {Positions, _} = lists:foldl(Fun, {#{}, length(CljeFirst)}, CljeFirst),
   Positions.
 
--spec src_to_target(file:name()) -> file:name().
+-spec src_to_target(file:name()) -> file:filename_all().
 src_to_target(Src) ->
   SrcBin    = iolist_to_binary(Src),
   Filename0 = clj_utils:resource_to_ns(SrcBin),
