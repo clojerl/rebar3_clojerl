@@ -7,6 +7,7 @@ init(State) ->
   Commands = [ fun rebar3_clojerl_prv_compile:init/1
              , fun rebar3_clojerl_prv_escriptize:init/1
              , fun rebar3_clojerl_prv_release:init/1
+             , fun rebar3_clojerl_prv_lib:init/1
              , fun rebar3_clojerl_prv_repl:init/1
              , fun rebar3_clojerl_prv_run:init/1
              , fun rebar3_clojerl_prv_test:init/1
