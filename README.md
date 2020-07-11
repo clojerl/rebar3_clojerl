@@ -28,7 +28,6 @@ $ rebar3 help clojerl
 clojerl <task>:
   compile           Compile clojerl project
   escriptize        Generate escript archive.
-  lib               Build a library for the Clojerl project.
   release           Build release of Clojerl project.
   repl              Start a clojerl repl
   run               Run the project's -main function.
