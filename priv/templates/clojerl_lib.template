@@ -1,0 +1,14 @@
+{description, "Complete Clojerl library (no processes) structure"}.
+{variables, [
+    {name, "my_clojerl_lib", "Name of the Clojerl library"},
+    {description, "A Clojerl library", "Short description of the app"}
+]}.
+
+{template, "README.md.tpl", "{{name}}/README.md"}.
+{template, "LICENSE.tpl", "{{name}}/LICENSE"}.
+{template, "rebar.config.tpl", "{{name}}/rebar.config"}.
+{template, "gitignore.tpl", "{{name}}/.gitignore"}.
+
+{template, "core.clje.tpl", "{{name}}/src/{{name}}/core.clje"}.
+{template, "app.src.tpl", "{{name}}/src/{{name}}.app.src"}.
+{template, "core_test.clje.tpl", "{{name}}/test/{{name}}/core_test.clje"}.
