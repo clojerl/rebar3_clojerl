@@ -1,6 +1,20 @@
 # Changelog
 
-## [0.8.0](https://github.com/clojerl/rebar3_clojerl/tree/0.8.0)
+## [0.8.1](https://github.com/clojerl/rebar3_clojerl/tree/0.8.1)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.0...0.8.1)
+
+**Closed issues:**
+
+- Issues running a Clojerl release [\#83](https://github.com/clojerl/rebar3_clojerl/issues/83)
+
+**Merged pull requests:**
+
+- Added support for creating library projects. [\#87](https://github.com/clojerl/rebar3_clojerl/pull/87) ([oubiwann](https://github.com/oubiwann))
+- \[\#83\] Update .app files with modules before creating a release [\#84](https://github.com/clojerl/rebar3_clojerl/pull/84) ([jfacorro](https://github.com/jfacorro))
+- Tweaked release plugin to mirror Erlang more closely. [\#82](https://github.com/clojerl/rebar3_clojerl/pull/82) ([oubiwann](https://github.com/oubiwann))
+
+## [0.8.0](https://github.com/clojerl/rebar3_clojerl/tree/0.8.0) (2020-07-07)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.7.0...0.8.0)
 
@@ -22,6 +36,7 @@
 
 **Merged pull requests:**
 
+- Prepare release 0.8.0 [\#81](https://github.com/clojerl/rebar3_clojerl/pull/81) ([jfacorro](https://github.com/jfacorro))
 - \[\#79\] Release template and command [\#80](https://github.com/clojerl/rebar3_clojerl/pull/80) ([jfacorro](https://github.com/jfacorro))
 - \[\#63\] escript template [\#78](https://github.com/clojerl/rebar3_clojerl/pull/78) ([jfacorro](https://github.com/jfacorro))
 - \[\#67\] Add escriptize command [\#77](https://github.com/clojerl/rebar3_clojerl/pull/77) ([jfacorro](https://github.com/jfacorro))
@@ -75,8 +90,6 @@
 
 **Merged pull requests:**
 
-- \[\#50\] Process provider\_hooks for the 'compile' task [\#56](https://github.com/clojerl/rebar3_clojerl/pull/56) ([jfacorro](https://github.com/jfacorro))
-- Add link to hex badge [\#55](https://github.com/clojerl/rebar3_clojerl/pull/55) ([jfacorro](https://github.com/jfacorro))
 - Add hex badge [\#54](https://github.com/clojerl/rebar3_clojerl/pull/54) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#52\] Support starting a repl in an almost empty rebar.config [\#53](https://github.com/clojerl/rebar3_clojerl/pull/53) ([jfacorro](https://github.com/jfacorro))
 - Include basic testing template [\#51](https://github.com/clojerl/rebar3_clojerl/pull/51) ([arpunk](https://github.com/arpunk))
@@ -94,6 +107,8 @@
 
 **Merged pull requests:**
 
+- \[\#50\] Process provider\_hooks for the 'compile' task [\#56](https://github.com/clojerl/rebar3_clojerl/pull/56) ([jfacorro](https://github.com/jfacorro))
+- Add link to hex badge [\#55](https://github.com/clojerl/rebar3_clojerl/pull/55) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#47\] document rebar3.config options [\#48](https://github.com/clojerl/rebar3_clojerl/pull/48) ([jfacorro](https://github.com/jfacorro))
 - Prepare release 0.6.6 [\#45](https://github.com/clojerl/rebar3_clojerl/pull/45) ([jfacorro](https://github.com/jfacorro))
 - clojerl test task is run in the test profile [\#44](https://github.com/clojerl/rebar3_clojerl/pull/44) ([jfacorro](https://github.com/jfacorro))
@@ -200,6 +215,7 @@
 
 - \[Closes \#22\] Handle issues with protocol compilation [\#23](https://github.com/clojerl/rebar3_clojerl/pull/23) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#20\] Abort on compiler error [\#21](https://github.com/clojerl/rebar3_clojerl/pull/21) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#6\] Include stacktrace in errors [\#7](https://github.com/clojerl/rebar3_clojerl/pull/7) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0) (2018-04-23)
 
@@ -265,7 +281,6 @@
 **Merged pull requests:**
 
 - \[Closes \#4\] Don't recompile unmodified source files \[Closes \#8\] Compile deps [\#9](https://github.com/clojerl/rebar3_clojerl/pull/9) ([jfacorro](https://github.com/jfacorro))
-- \[Closes \#6\] Include stacktrace in errors [\#7](https://github.com/clojerl/rebar3_clojerl/pull/7) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#2\] Print compile-time errors [\#5](https://github.com/clojerl/rebar3_clojerl/pull/5) ([jfacorro](https://github.com/jfacorro))
 - Add repl command [\#1](https://github.com/clojerl/rebar3_clojerl/pull/1) ([jfacorro](https://github.com/jfacorro))
 
