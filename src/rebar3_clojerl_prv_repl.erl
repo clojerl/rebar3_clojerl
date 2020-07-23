@@ -4,7 +4,7 @@
 
 -define(PROVIDER, repl).
 -define(NAMESPACE, clojerl).
--define(DEPS, [compile]).
+-define(DEPS, [{?NAMESPACE, compile}]).
 
 -type opts() :: [{atom(), any()}].
 
