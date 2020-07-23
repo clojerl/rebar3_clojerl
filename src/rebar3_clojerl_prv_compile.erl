@@ -45,7 +45,7 @@ do(State) ->
   AppsPaths   = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- ProjectApps],
   ok          = code:add_pathsa(AppsPaths),
 
-  Apps0       = Deps1 ++ ProjectApps,
+  AllApps0    = Deps1 ++ ProjectApps,
   Config      = #{protocols_dir => protocols_dir(State)},
 
   try
@@ -58,8 +58,8 @@ do(State) ->
     Providers = rebar_state:providers(State),
     rebar_hooks:run_all_hooks(Cwd, pre, ?NAMESPACE_PROVIDER, Providers, State),
 
-    Apps1 = compile_clojerl(Apps0, Config, Providers, State),
-    [compile(AppInfo, Config, Providers, State) || AppInfo <- Apps1],
+    AllApps1 = compile_clojerl(AllApps0, Config, Providers, State),
+    [compile(AppInfo, Config, Providers, State) || AppInfo <- AllApps1],
 
     %% Run top level post hooks
     rebar_hooks:run_all_hooks(Cwd, post, ?NAMESPACE_PROVIDER, Providers, State)
@@ -88,13 +88,21 @@ protocols_dir(State) ->
     %% When there are no applications use Clojerl's ebin
     [] ->
       Deps = rebar_state:all_deps(State),
-      {ok, ClojerlApp} = rebar3_clojerl_utils:find_app(Deps, ?CLOJERL),
-      ProtoDir = rebar_app_info:ebin_dir(ClojerlApp),
-      rebar_api:debug( "No project apps, using Clojerl's "
-                       "ebin as protocol dir: ~s"
-                     , [ProtoDir]
-                     ),
-      ProtoDir
+      case rebar3_clojerl_utils:find_app(Deps, ?CLOJERL) of
+        {ok, ClojerlApp} ->
+          ProtoDir = rebar_app_info:ebin_dir(ClojerlApp),
+          rebar_api:debug( "No project apps, using Clojerl's "
+                           "ebin as protocol dir: ~s"
+                         , [ProtoDir]
+                         ),
+          ProtoDir;
+        notfound ->
+          rebar_api:debug( "No project apps or Clojerl as a dep, "
+                           "using './ebin' as protocol dir"
+                         , []
+                         ),
+          "ebin"
+      end
   end.
 
 -spec compile_clojerl( [rebar_app_info:t()]
@@ -103,12 +111,13 @@ protocols_dir(State) ->
                      , rebar_state:t()
                      ) ->
   [rebar_app_info:t()].
-compile_clojerl(Apps, Config, Providers, State) ->
-  case rebar3_clojerl_utils:find_app(Apps, ?CLOJERL) of
-    notfound -> Apps;
+compile_clojerl(AllApps, Config, Providers, State) ->
+  case rebar3_clojerl_utils:find_app(AllApps, ?CLOJERL) of
+    notfound ->
+      AllApps;
     {ok, ClojerlApp} ->
       compile(ClojerlApp, Config, Providers, State),
-      Apps -- [ClojerlApp]
+      AllApps -- [ClojerlApp]
   end.
 
 -spec backup_duplicates([rebar_app_info:t()], config()) -> ok.
@@ -157,6 +166,8 @@ compile(AppInfo0, Config0, Providers, State) ->
                                      , State
                                      ),
 
+  %% The Erlang modules for clojerl have been compiled at this point.
+  %% Make sure the clojerl application is available and started.
   ok      = rebar3_clojerl_utils:ensure_clojerl(),
 
   Graph   = load_graph(AppInfo),
@@ -191,7 +202,7 @@ compile(AppInfo0, Config0, Providers, State) ->
 
 -spec compile_clje(file:name(), config()) -> ok.
 compile_clje(Src, Config) ->
-  io:format("%%% Compiling ~s...~n", [Src]),
+  io:format("===> Compiling ~s...~n", [Src]),
 
   SrcDir   = list_to_binary(maps:get(src_dir, Config)),
   EbinDir  = list_to_binary(maps:get(ebin_dir, Config)),

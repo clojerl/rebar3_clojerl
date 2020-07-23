@@ -4,7 +4,7 @@
 
 -define(PROVIDER, repl).
 -define(NAMESPACE, clojerl).
--define(DEPS, [compile]).
+-define(DEPS, [{?NAMESPACE, compile}]).
 
 -type opts() :: [{atom(), any()}].
 
@@ -39,6 +39,7 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
+  rebar3_clojerl_utils:ensure_clojerl(),
   repl(State),
   {ok, State}.
 
