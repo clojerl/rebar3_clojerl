@@ -88,13 +88,21 @@ protocols_dir(State) ->
     %% When there are no applications use Clojerl's ebin
     [] ->
       Deps = rebar_state:all_deps(State),
-      {ok, ClojerlApp} = rebar3_clojerl_utils:find_app(Deps, ?CLOJERL),
-      ProtoDir = rebar_app_info:ebin_dir(ClojerlApp),
-      rebar_api:debug( "No project apps, using Clojerl's "
-                       "ebin as protocol dir: ~s"
-                     , [ProtoDir]
-                     ),
-      ProtoDir
+      case rebar3_clojerl_utils:find_app(Deps, ?CLOJERL) of
+        {ok, ClojerlApp} ->
+          ProtoDir = rebar_app_info:ebin_dir(ClojerlApp),
+          rebar_api:debug( "No project apps, using Clojerl's "
+                           "ebin as protocol dir: ~s"
+                         , [ProtoDir]
+                         ),
+          ProtoDir;
+        notfound ->
+          rebar_api:debug( "No project apps or Clojerl as a dep, "
+                           "using './ebin' as protocol dir"
+                         , []
+                         ),
+          "ebin"
+      end
   end.
 
 -spec compile_clojerl( [rebar_app_info:t()]
