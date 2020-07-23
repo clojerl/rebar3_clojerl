@@ -18,7 +18,12 @@ ensure_clojerl() ->
     {module, clojerl} ->
       ok = clojerl:start();
     {error, Reason} ->
-      rebar_api:abort("Application Clojerl could not be started: ~p", [Reason])
+      rebar_api:abort( "Clojerl could not be started. "
+                       "Please make sure it is available in "
+                       "the code path or added as a dependency. "
+                       "Error: ~p"
+                     , [Reason]
+                     )
   end.
 
 %% @doc Updates the list of modules in the .app file for the specified

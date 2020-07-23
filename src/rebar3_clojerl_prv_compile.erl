@@ -166,6 +166,8 @@ compile(AppInfo0, Config0, Providers, State) ->
                                      , State
                                      ),
 
+  %% The Erlang modules for clojerl have been compiled at this point.
+  %% Make sure the clojerl application is available and started.
   ok      = rebar3_clojerl_utils:ensure_clojerl(),
 
   Graph   = load_graph(AppInfo),
