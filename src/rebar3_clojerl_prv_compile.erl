@@ -202,7 +202,7 @@ compile(AppInfo0, Config0, Providers, State) ->
 
 -spec compile_clje(file:name(), config()) -> ok.
 compile_clje(Src, Config) ->
-  io:format("%%% Compiling ~s...~n", [Src]),
+  io:format("===> Compiling ~s...~n", [Src]),
 
   SrcDir   = list_to_binary(maps:get(src_dir, Config)),
   EbinDir  = list_to_binary(maps:get(ebin_dir, Config)),
