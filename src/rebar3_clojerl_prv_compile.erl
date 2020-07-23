@@ -45,7 +45,7 @@ do(State) ->
   AppsPaths   = [rebar_app_info:ebin_dir(AppInfo) || AppInfo <- ProjectApps],
   ok          = code:add_pathsa(AppsPaths),
 
-  Apps0       = Deps1 ++ ProjectApps,
+  AllApps0    = Deps1 ++ ProjectApps,
   Config      = #{protocols_dir => protocols_dir(State)},
 
   try
@@ -58,8 +58,8 @@ do(State) ->
     Providers = rebar_state:providers(State),
     rebar_hooks:run_all_hooks(Cwd, pre, ?NAMESPACE_PROVIDER, Providers, State),
 
-    Apps1 = compile_clojerl(Apps0, Config, Providers, State),
-    [compile(AppInfo, Config, Providers, State) || AppInfo <- Apps1],
+    AllApps1 = compile_clojerl(AllApps0, Config, Providers, State),
+    [compile(AppInfo, Config, Providers, State) || AppInfo <- AllApps1],
 
     %% Run top level post hooks
     rebar_hooks:run_all_hooks(Cwd, post, ?NAMESPACE_PROVIDER, Providers, State)
@@ -111,12 +111,13 @@ protocols_dir(State) ->
                      , rebar_state:t()
                      ) ->
   [rebar_app_info:t()].
-compile_clojerl(Apps, Config, Providers, State) ->
-  case rebar3_clojerl_utils:find_app(Apps, ?CLOJERL) of
-    notfound -> Apps;
+compile_clojerl(AllApps, Config, Providers, State) ->
+  case rebar3_clojerl_utils:find_app(AllApps, ?CLOJERL) of
+    notfound ->
+      AllApps;
     {ok, ClojerlApp} ->
       compile(ClojerlApp, Config, Providers, State),
-      Apps -- [ClojerlApp]
+      AllApps -- [ClojerlApp]
   end.
 
 -spec backup_duplicates([rebar_app_info:t()], config()) -> ok.
