@@ -1,6 +1,24 @@
 # Changelog
 
-## [0.8.1](https://github.com/clojerl/rebar3_clojerl/tree/0.8.1)
+## [0.8.2](https://github.com/clojerl/rebar3_clojerl/tree/0.8.2)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.1...0.8.2)
+
+**Implemented enhancements:**
+
+- Make {clojerl, compile} depend on {default, compile} [\#91](https://github.com/clojerl/rebar3_clojerl/issues/91)
+
+**Closed issues:**
+
+- Enable starting a REPL outside of a project context [\#88](https://github.com/clojerl/rebar3_clojerl/issues/88)
+- Possible reader issues when running the Clojerl REPL in a release? [\#86](https://github.com/clojerl/rebar3_clojerl/issues/86)
+
+**Merged pull requests:**
+
+- \[\#91\] Make 'clojerl compile' depend on default 'compile' [\#92](https://github.com/clojerl/rebar3_clojerl/pull/92) ([jfacorro](https://github.com/jfacorro))
+- \[\#88\] Improve error messaging and handling when clojerl is not available [\#89](https://github.com/clojerl/rebar3_clojerl/pull/89) ([jfacorro](https://github.com/jfacorro))
+
+## [0.8.1](https://github.com/clojerl/rebar3_clojerl/tree/0.8.1) (2020-07-22)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.0...0.8.1)
 
@@ -90,6 +108,8 @@
 
 **Merged pull requests:**
 
+- \[\#50\] Process provider\_hooks for the 'compile' task [\#56](https://github.com/clojerl/rebar3_clojerl/pull/56) ([jfacorro](https://github.com/jfacorro))
+- Add link to hex badge [\#55](https://github.com/clojerl/rebar3_clojerl/pull/55) ([jfacorro](https://github.com/jfacorro))
 - Add hex badge [\#54](https://github.com/clojerl/rebar3_clojerl/pull/54) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#52\] Support starting a repl in an almost empty rebar.config [\#53](https://github.com/clojerl/rebar3_clojerl/pull/53) ([jfacorro](https://github.com/jfacorro))
 - Include basic testing template [\#51](https://github.com/clojerl/rebar3_clojerl/pull/51) ([arpunk](https://github.com/arpunk))
@@ -107,13 +127,10 @@
 
 **Merged pull requests:**
 
-- \[\#50\] Process provider\_hooks for the 'compile' task [\#56](https://github.com/clojerl/rebar3_clojerl/pull/56) ([jfacorro](https://github.com/jfacorro))
-- Add link to hex badge [\#55](https://github.com/clojerl/rebar3_clojerl/pull/55) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#47\] document rebar3.config options [\#48](https://github.com/clojerl/rebar3_clojerl/pull/48) ([jfacorro](https://github.com/jfacorro))
 - Prepare release 0.6.6 [\#45](https://github.com/clojerl/rebar3_clojerl/pull/45) ([jfacorro](https://github.com/jfacorro))
 - clojerl test task is run in the test profile [\#44](https://github.com/clojerl/rebar3_clojerl/pull/44) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#42\] update documentation and template [\#43](https://github.com/clojerl/rebar3_clojerl/pull/43) ([jfacorro](https://github.com/jfacorro))
-- Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
 
 ## [0.6.5](https://github.com/clojerl/rebar3_clojerl/tree/0.6.5) (2018-11-21)
 
@@ -125,6 +142,7 @@
 
 **Merged pull requests:**
 
+- Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
 - \[\#38\] Mention templates in README [\#40](https://github.com/clojerl/rebar3_clojerl/pull/40) ([jfacorro](https://github.com/jfacorro))
 - \[\#38\] add template [\#39](https://github.com/clojerl/rebar3_clojerl/pull/39) ([jfacorro](https://github.com/jfacorro))
 
@@ -148,10 +166,6 @@
 ## [0.6.3](https://github.com/clojerl/rebar3_clojerl/tree/0.6.3) (2018-08-27)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.2...0.6.3)
-
-**Fixed bugs:**
-
-- Apply compile order to deps [\#32](https://github.com/clojerl/rebar3_clojerl/issues/32)
 
 **Merged pull requests:**
 
@@ -215,11 +229,14 @@
 
 - \[Closes \#22\] Handle issues with protocol compilation [\#23](https://github.com/clojerl/rebar3_clojerl/pull/23) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#20\] Abort on compiler error [\#21](https://github.com/clojerl/rebar3_clojerl/pull/21) ([jfacorro](https://github.com/jfacorro))
-- \[Closes \#6\] Include stacktrace in errors [\#7](https://github.com/clojerl/rebar3_clojerl/pull/7) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0) (2018-04-23)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.2...0.3.0)
+
+**Fixed bugs:**
+
+- Apply compile order to deps [\#32](https://github.com/clojerl/rebar3_clojerl/issues/32)
 
 **Closed issues:**
 
@@ -281,6 +298,7 @@
 **Merged pull requests:**
 
 - \[Closes \#4\] Don't recompile unmodified source files \[Closes \#8\] Compile deps [\#9](https://github.com/clojerl/rebar3_clojerl/pull/9) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#6\] Include stacktrace in errors [\#7](https://github.com/clojerl/rebar3_clojerl/pull/7) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#2\] Print compile-time errors [\#5](https://github.com/clojerl/rebar3_clojerl/pull/5) ([jfacorro](https://github.com/jfacorro))
 - Add repl command [\#1](https://github.com/clojerl/rebar3_clojerl/pull/1) ([jfacorro](https://github.com/jfacorro))
 
