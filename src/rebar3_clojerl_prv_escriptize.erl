@@ -6,7 +6,6 @@
 
 -define(PROVIDER, escriptize).
 -define(NAMESPACE, clojerl).
--define(NAMESPACE_PROVIDER, {?NAMESPACE, ?PROVIDER}).
 -define(DEPS, [{?NAMESPACE, compile}]).
 
 %% =============================================================================

@@ -4,7 +4,6 @@
 
 -define(PROVIDER, release).
 -define(NAMESPACE, clojerl).
--define(NAMESPACE_PROVIDER, {?NAMESPACE, ?PROVIDER}).
 -define(DEPS, [{?NAMESPACE, compile}]).
 
 %% =============================================================================
