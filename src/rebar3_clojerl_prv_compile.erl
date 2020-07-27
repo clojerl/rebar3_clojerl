@@ -58,6 +58,10 @@ do(State) ->
     Providers = rebar_state:providers(State),
     rebar_hooks:run_all_hooks(Cwd, pre, ?NAMESPACE_PROVIDER, Providers, State),
 
+    %% The Erlang modules for clojerl have been compiled at this point.
+    %% Make sure the clojerl application is available and started.
+    ok       = rebar3_clojerl_utils:ensure_clojerl(),
+
     AllApps1 = compile_clojerl(AllApps0, Config, Providers, State),
     [compile(AppInfo, Config, Providers, State) || AppInfo <- AllApps1],
 
@@ -165,10 +169,6 @@ compile(AppInfo0, Config0, Providers, State) ->
                                      , AppInfo0
                                      , State
                                      ),
-
-  %% The Erlang modules for clojerl have been compiled at this point.
-  %% Make sure the clojerl application is available and started.
-  ok      = rebar3_clojerl_utils:ensure_clojerl(),
 
   Graph   = load_graph(AppInfo),
   Config1 = Config0#{graph => Graph},
