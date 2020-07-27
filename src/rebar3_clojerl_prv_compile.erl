@@ -7,7 +7,7 @@
 -define(PROVIDER, compile).
 -define(NAMESPACE, clojerl).
 -define(NAMESPACE_PROVIDER, {?NAMESPACE, ?PROVIDER}).
--define(DEPS, [{default, lock}]).
+-define(DEPS, [{default, compile}]).
 
 -type config() :: #{ ebin_dir      => file:name()
                    , protocols_dir => file:name()
