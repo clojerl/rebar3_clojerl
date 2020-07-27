@@ -1,6 +1,23 @@
 # Changelog
 
-## [0.8.2](https://github.com/clojerl/rebar3_clojerl/tree/0.8.2)
+## [0.8.3](https://github.com/clojerl/rebar3_clojerl/tree/0.8.3)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.2...0.8.3)
+
+**Implemented enhancements:**
+
+- Bump versions in templates [\#95](https://github.com/clojerl/rebar3_clojerl/issues/95)
+
+**Closed issues:**
+
+- Generate documentation with edoc [\#93](https://github.com/clojerl/rebar3_clojerl/issues/93)
+
+**Merged pull requests:**
+
+- \[\#95\] Bump versions [\#96](https://github.com/clojerl/rebar3_clojerl/pull/96) ([jfacorro](https://github.com/jfacorro))
+- \[\#93\] Generate edoc [\#94](https://github.com/clojerl/rebar3_clojerl/pull/94) ([jfacorro](https://github.com/jfacorro))
+
+## [0.8.2](https://github.com/clojerl/rebar3_clojerl/tree/0.8.2) (2020-07-27)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.1...0.8.2)
 
@@ -131,6 +148,7 @@
 - Prepare release 0.6.6 [\#45](https://github.com/clojerl/rebar3_clojerl/pull/45) ([jfacorro](https://github.com/jfacorro))
 - clojerl test task is run in the test profile [\#44](https://github.com/clojerl/rebar3_clojerl/pull/44) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#42\] update documentation and template [\#43](https://github.com/clojerl/rebar3_clojerl/pull/43) ([jfacorro](https://github.com/jfacorro))
+- Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
 
 ## [0.6.5](https://github.com/clojerl/rebar3_clojerl/tree/0.6.5) (2018-11-21)
 
@@ -142,7 +160,6 @@
 
 **Merged pull requests:**
 
-- Fix rebar3 template [\#41](https://github.com/clojerl/rebar3_clojerl/pull/41) ([arpunk](https://github.com/arpunk))
 - \[\#38\] Mention templates in README [\#40](https://github.com/clojerl/rebar3_clojerl/pull/40) ([jfacorro](https://github.com/jfacorro))
 - \[\#38\] add template [\#39](https://github.com/clojerl/rebar3_clojerl/pull/39) ([jfacorro](https://github.com/jfacorro))
 
@@ -166,6 +183,10 @@
 ## [0.6.3](https://github.com/clojerl/rebar3_clojerl/tree/0.6.3) (2018-08-27)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.6.2...0.6.3)
+
+**Fixed bugs:**
+
+- Apply compile order to deps [\#32](https://github.com/clojerl/rebar3_clojerl/issues/32)
 
 **Merged pull requests:**
 
@@ -233,10 +254,6 @@
 ## [0.3.0](https://github.com/clojerl/rebar3_clojerl/tree/0.3.0) (2018-04-23)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.2.2...0.3.0)
-
-**Fixed bugs:**
-
-- Apply compile order to deps [\#32](https://github.com/clojerl/rebar3_clojerl/issues/32)
 
 **Closed issues:**
 
