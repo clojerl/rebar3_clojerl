@@ -24,7 +24,7 @@ init(State) ->
                               , { desc
                                 , "Build a release for the Clojerl project."
                                 }
-                              , {opts, relx:opt_spec_list()}
+                              , {opts, options()}
                               ]
                              ),
   {ok, rebar_state:add_provider(State, Provider)}.
@@ -52,3 +52,15 @@ update_all_app_files(State) ->
   AllPaths    = DepsPaths ++ AppsPaths,
   [rebar3_clojerl_utils:update_app_file(Dir)|| Dir <- AllPaths],
   ok.
+
+%% @doc Return the options spec for the release command
+%%
+%% Attempts to get the options spec from two different functions to
+%% support latest changes in rebar3.
+-spec options() -> any().
+options() ->
+  try
+    relx:opt_spec_list()
+  catch _:undef ->
+      rebar_relx:opt_spec_list()
+  end.
