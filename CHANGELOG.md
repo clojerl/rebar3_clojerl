@@ -1,6 +1,18 @@
 # Changelog
 
-## [0.8.3](https://github.com/clojerl/rebar3_clojerl/tree/0.8.3)
+## [0.8.4](https://github.com/clojerl/rebar3_clojerl/tree/0.8.4)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.3...0.8.4)
+
+**Fixed bugs:**
+
+- Latest rebar3 changes make plugin crash [\#97](https://github.com/clojerl/rebar3_clojerl/issues/97)
+
+**Merged pull requests:**
+
+- \[\#97\] Fallback to new function to get release command options spec [\#98](https://github.com/clojerl/rebar3_clojerl/pull/98) ([jfacorro](https://github.com/jfacorro))
+
+## [0.8.3](https://github.com/clojerl/rebar3_clojerl/tree/0.8.3) (2020-07-27)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.2...0.8.3)
 
