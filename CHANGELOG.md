@@ -1,6 +1,14 @@
 # Changelog
 
-## [0.8.4](https://github.com/clojerl/rebar3_clojerl/tree/0.8.4)
+## [0.8.5](https://github.com/clojerl/rebar3_clojerl/tree/0.8.5) (2021-05-09)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.4...0.8.5)
+
+**Merged pull requests:**
+
+- \[\#100\] Update plugin version in templates [\#101](https://github.com/clojerl/rebar3_clojerl/pull/101) ([jfacorro](https://github.com/jfacorro))
+
+## [0.8.4](https://github.com/clojerl/rebar3_clojerl/tree/0.8.4) (2020-08-12)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.3...0.8.4)
 
@@ -10,7 +18,8 @@
 
 **Merged pull requests:**
 
-- \[\#97\] Fallback to new function to get release command options spec [\#98](https://github.com/clojerl/rebar3_clojerl/pull/98) ([jfacorro](https://github.com/jfacorro))
+- Prepare release 0.8.4 [\#99](https://github.com/clojerl/rebar3_clojerl/pull/99) ([jfacorro](https://github.com/jfacorro))
+- \[\#97\] Fall back to new function to get release command options spec [\#98](https://github.com/clojerl/rebar3_clojerl/pull/98) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.8.3](https://github.com/clojerl/rebar3_clojerl/tree/0.8.3) (2020-07-27)
 
