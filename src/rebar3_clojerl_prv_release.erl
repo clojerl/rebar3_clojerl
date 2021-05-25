@@ -33,7 +33,7 @@ init(State) ->
 do(State) ->
   update_all_app_files(State),
   %% Generate release
-  rebar_relx:do(rlx_prv_release, "release", ?PROVIDER, State).
+  rebar_relx:do(?PROVIDER, State).
 
 -spec format_error(any()) -> iolist().
 format_error(Reason) ->
