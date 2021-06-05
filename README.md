@@ -7,6 +7,9 @@ Compile clojerl projects
 
 ## Use
 
+In order to use this plugin you should have `rebar3` greater than
+`v3.14.0` installed.
+
 Add the plugin to your `rebar.config` (along with `clojerl` as a
 dependency):
 
