@@ -1,11 +1,30 @@
 # Changelog
 
+## [0.8.6](https://github.com/clojerl/rebar3_clojerl/tree/0.8.6)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.5...0.8.6)
+
+**Closed issues:**
+
+- Add a Makefile with the commands for publishing to hex [\#103](https://github.com/clojerl/rebar3_clojerl/issues/103)
+
+**Merged pull requests:**
+
+- \[\#106\] Add the src directories from dependencies before compiling clojerl [\#107](https://github.com/clojerl/rebar3_clojerl/pull/107) ([jfacorro](https://github.com/jfacorro))
+- Support for relx 4.0 as per rebar 3.14.0 [\#105](https://github.com/clojerl/rebar3_clojerl/pull/105) ([arpunk](https://github.com/arpunk))
+- \[\#103\] Add Makefile with targets to publish to hex [\#104](https://github.com/clojerl/rebar3_clojerl/pull/104) ([jfacorro](https://github.com/jfacorro))
+
 ## [0.8.5](https://github.com/clojerl/rebar3_clojerl/tree/0.8.5) (2021-05-09)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.4...0.8.5)
 
+**Closed issues:**
+
+- Update templates to use plugin version 0.8.4 [\#100](https://github.com/clojerl/rebar3_clojerl/issues/100)
+
 **Merged pull requests:**
 
+- Prepare release 0.8.5 [\#102](https://github.com/clojerl/rebar3_clojerl/pull/102) ([jfacorro](https://github.com/jfacorro))
 - \[\#100\] Update plugin version in templates [\#101](https://github.com/clojerl/rebar3_clojerl/pull/101) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.8.4](https://github.com/clojerl/rebar3_clojerl/tree/0.8.4) (2020-08-12)
