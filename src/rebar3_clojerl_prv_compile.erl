@@ -48,6 +48,9 @@ do(State) ->
   AllApps0    = Deps1 ++ ProjectApps,
   Config      = #{protocols_dir => protocols_dir(State)},
 
+  %% Add the src directories for the all the applications
+  [code:add_pathsa(clje_src_dirs(AppInfo)) || AppInfo <- AllApps0],
+
   try
     %% More than one application might modify existing protocols, so we
     %% restore the original backed-up protocol modules before compiling.
@@ -281,18 +284,14 @@ cljinfo_file(AppInfo) ->
 
 -spec find_files_to_compile(rebar_app_info:t()) -> [{file:name(), file:name()}].
 find_files_to_compile(AppInfo) ->
-  OutDir      = rebar_app_info:out_dir(AppInfo),
-  CljeSrcDirs = rebar_app_info:get(AppInfo, clje_src_dirs, ?DEFAULT_SRC_DIRS),
-  CljeFirst   = clje_compile_first(AppInfo),
-  CljeExclude = rebar_app_info:get(AppInfo, clje_exclude, []),
+  CljeSrcPaths = clje_src_dirs(AppInfo),
+  CljeFirst    = clje_compile_first(AppInfo),
+  CljeExclude  = clje_exclude(AppInfo),
 
-  SrcDirPaths = [filename:join(OutDir, Dir) || Dir <- CljeSrcDirs],
-  ok          = code:add_pathsa(SrcDirPaths),
-
-  AllFiles    = lists:flatmap(fun find_files/1, SrcDirPaths),
-  SortFun     = fun({_, X}, {_, Y}) ->
-                    maps:get(X, CljeFirst, -1) > maps:get(Y, CljeFirst, -1)
-                end,
+  AllFiles     = lists:flatmap(fun find_files/1, CljeSrcPaths),
+  SortFun      = fun({_, X}, {_, Y}) ->
+                     maps:get(X, CljeFirst, -1) > maps:get(Y, CljeFirst, -1)
+                 end,
 
   [ X || {_, Src} = X <- lists:sort(SortFun, AllFiles),
          not lists:member(Src, CljeExclude)
@@ -362,3 +361,13 @@ is_clojerl_compiled(Path) ->
 
   {ok, {_, Chunks}} = beam_lib:chunks(PathStr, ChunkNames, ChunkOpts),
   proplists:get_value(CoreChunk, Chunks) =/= missing_chunk.
+
+-spec clje_src_dirs(rebar_app_info:t()) -> [string()].
+clje_src_dirs(AppInfo) ->
+  OutDir      = rebar_app_info:out_dir(AppInfo),
+  CljeSrcDirs = rebar_app_info:get(AppInfo, clje_src_dirs, ?DEFAULT_SRC_DIRS),
+  [filename:join(OutDir, Dir) || Dir <- CljeSrcDirs].
+
+-spec clje_exclude(rebar_app_info:t()) -> [string()].
+clje_exclude(AppInfo) ->
+  rebar_app_info:get(AppInfo, clje_exclude, []).
