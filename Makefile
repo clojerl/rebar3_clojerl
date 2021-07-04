@@ -11,7 +11,7 @@ clean:
 
 docs:
 	@ echo "Generating docs..."
-	@ rebar3 docs
+	@ rebar3 as docs docs
 
 publish: clean compile docs
 	@ echo "Publishing..."
