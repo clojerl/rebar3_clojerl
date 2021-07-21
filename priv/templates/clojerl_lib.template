@@ -10,5 +10,5 @@
 {template, "gitignore.tpl", "{{name}}/.gitignore"}.
 
 {template, "core.clje.tpl", "{{name}}/src/{{name}}/core.clje"}.
-{template, "app.src.tpl", "{{name}}/src/{{name}}.app.src"}.
+{template, "lib.src.tpl", "{{name}}/src/{{name}}.app.src"}.
 {template, "core_test.clje.tpl", "{{name}}/test/{{name}}/core_test.clje"}.
