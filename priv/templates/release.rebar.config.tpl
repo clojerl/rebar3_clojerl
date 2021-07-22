@@ -1,7 +1,7 @@
 {erl_opts, [debug_info]}.
 
-{deps, [{clojerl, "0.7.0"}]}.
-{plugins, [{rebar3_clojerl, "0.8.5"}]}.
+{deps, [{clojerl, "0.7.1"}]}.
+{plugins, [{rebar3_clojerl, "0.8.6"}]}.
 
 {relx, [ { release
          , {{{name}}, "0.1.0"}
