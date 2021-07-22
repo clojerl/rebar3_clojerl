@@ -43,10 +43,12 @@ by running for example:
     $ rebar3 help clojerl repl
     Start a clojerl repl
 	Usage: rebar3 clojerl repl [--apps <apps>] [--sname <sname>]
+	                           [--config <config>]
 
 	  --apps   List of applications that should be started separated by commas
 	           (e.g. --apps app1,app2,app3).
 	  --sname  Erlang node name.
+	  --config  Path to the config file to load.
 
 ### rebar.config options
 
