@@ -1,6 +1,29 @@
 # Changelog
 
-## [0.8.6](https://github.com/clojerl/rebar3_clojerl/tree/0.8.6)
+## [0.8.7](https://github.com/clojerl/rebar3_clojerl/tree/0.8.7)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.6...0.8.7)
+
+**Implemented enhancements:**
+
+- --config option for clojerl repl command [\#14](https://github.com/clojerl/rebar3_clojerl/issues/14)
+
+**Closed issues:**
+
+- Bump versions in templates [\#114](https://github.com/clojerl/rebar3_clojerl/issues/114)
+- Remove unnecessary `mod` attribute in the lib template [\#112](https://github.com/clojerl/rebar3_clojerl/issues/112)
+- Create profile for generating docs [\#111](https://github.com/clojerl/rebar3_clojerl/issues/111)
+- Add profile for generating docs [\#109](https://github.com/clojerl/rebar3_clojerl/issues/109)
+- Add clojerl src directories from dependencies [\#106](https://github.com/clojerl/rebar3_clojerl/issues/106)
+
+**Merged pull requests:**
+
+- \[\#14\] Add `--config` flag for the REPL [\#116](https://github.com/clojerl/rebar3_clojerl/pull/116) ([arpunk](https://github.com/arpunk))
+- \[\#114\] Bump versions in templates [\#115](https://github.com/clojerl/rebar3_clojerl/pull/115) ([arpunk](https://github.com/arpunk))
+- \[\#112\] Remove unnecessary mod attribute [\#113](https://github.com/clojerl/rebar3_clojerl/pull/113) ([arpunk](https://github.com/arpunk))
+- \[\#109\] Create a profile for generating docs [\#110](https://github.com/clojerl/rebar3_clojerl/pull/110) ([jfacorro](https://github.com/jfacorro))
+
+## [0.8.6](https://github.com/clojerl/rebar3_clojerl/tree/0.8.6) (2021-06-18)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.5...0.8.6)
 
@@ -10,6 +33,7 @@
 
 **Merged pull requests:**
 
+- Prepare release 0.8.6 [\#108](https://github.com/clojerl/rebar3_clojerl/pull/108) ([jfacorro](https://github.com/jfacorro))
 - \[\#106\] Add the src directories from dependencies before compiling clojerl [\#107](https://github.com/clojerl/rebar3_clojerl/pull/107) ([jfacorro](https://github.com/jfacorro))
 - Support for relx 4.0 as per rebar 3.14.0 [\#105](https://github.com/clojerl/rebar3_clojerl/pull/105) ([arpunk](https://github.com/arpunk))
 - \[\#103\] Add Makefile with targets to publish to hex [\#104](https://github.com/clojerl/rebar3_clojerl/pull/104) ([jfacorro](https://github.com/jfacorro))
