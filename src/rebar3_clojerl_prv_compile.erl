@@ -293,9 +293,11 @@ find_files_to_compile(AppInfo) ->
                      maps:get(X, CljeFirst, -1) > maps:get(Y, CljeFirst, -1)
                  end,
 
-  [ X || {_, Src} = X <- lists:sort(SortFun, AllFiles),
-         not lists:member(Src, CljeExclude)
-  ].
+  FilesToCompile = [ X || {_, Src} = X <- lists:sort(SortFun, AllFiles),
+                          not lists:member(Src, CljeExclude)
+                   ],
+
+  lists:sort(FilesToCompile).
 
 -spec find_files(file:name()) -> [{file:name(), file:name()}].
 find_files(SrcDir) ->
