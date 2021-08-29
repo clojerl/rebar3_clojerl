@@ -182,13 +182,12 @@ compile(AppInfo0, Config0, Providers, State) ->
       false;
     SrcFiles ->
       rebar_api:info("Clojerl Compiling ~s", [AppName]),
-      rebar_api:debug("Files to compile: ~p", [SrcFiles]),
+      rebar_api:debug("Candidate files to compile: ~p", [SrcFiles]),
       EbinDir  = rebar_app_info:ebin_dir(AppInfo),
-      ProtoDir = maps:get(protocols_dir, Config1),
       Config2 = Config1#{ebin_dir => EbinDir},
       [ compile_clje(Src, Config2#{src_dir => SrcDir})
         || {SrcDir, Src} <- SrcFiles,
-           should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph)
+           should_compile_file(Src, SrcDir, Graph)
       ],
       store_graph(AppInfo, Graph),
       rebar_hooks:run_all_hooks( AppDir
@@ -306,17 +305,15 @@ find_files(SrcDir) ->
 
 -spec should_compile_file( file:name()
                          , file:name()
-                         , file:name()
-                         , file:name()
                          , digraph:graph()
                          ) -> boolean().
-should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph) ->
+should_compile_file(Src, SrcDir, Graph) ->
   %% Check if the target file is either in the ebin directory or the
   %% protocols directory.
   FullSrc = filename:join(SrcDir, Src),
+  rebar_api:debug("Checking if ~s should be compiled...", [Src]),
   Fun = fun(Target) ->
-            should_compile(filename:join(ProtoDir, Target), FullSrc) andalso
-            should_compile(filename:join(EbinDir, Target), FullSrc)
+            should_compile(FullSrc, Target, code:get_path())
         end,
   case digraph:out_neighbours(Graph, Src) of
     [] ->
@@ -328,8 +325,21 @@ should_compile_file(Src, SrcDir, EbinDir, ProtoDir, Graph) ->
       lists:any(Fun, Targets)
   end.
 
--spec should_compile(binary(), file:name()) -> boolean().
-should_compile(Target, Source) ->
+-spec should_compile(file:name(), binary(), [file:name()]) -> boolean().
+should_compile(_FullSource, _Target, []) ->
+  true;
+should_compile(FullSource, Target, [Dir | Dirs]) ->
+  FullTarget = filename:join(Dir, Target),
+  case should_compile(FullSource, FullTarget) of
+    false ->
+      rebar_api:debug("Should NOT be compiled because of ~s.", [FullTarget]),
+      false;
+    true ->
+      should_compile(FullSource, Target, Dirs)
+  end.
+
+-spec should_compile(file:name(), binary()) -> boolean().
+should_compile(Source, Target) ->
   not filelib:is_file(Target)
     orelse filelib:last_modified(Target) < filelib:last_modified(Source)
     orelse not is_clojerl_compiled(Target).
