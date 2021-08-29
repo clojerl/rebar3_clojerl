@@ -1,6 +1,20 @@
 # Changelog
 
-## [0.8.7](https://github.com/clojerl/rebar3_clojerl/tree/0.8.7)
+## [0.8.8](https://github.com/clojerl/rebar3_clojerl/tree/0.8.8)
+
+[Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.7...0.8.8)
+
+**Closed issues:**
+
+- Verification that checks if file should be compiled fails [\#120](https://github.com/clojerl/rebar3_clojerl/issues/120)
+- Sort files that are going to be compiled [\#118](https://github.com/clojerl/rebar3_clojerl/issues/118)
+
+**Merged pull requests:**
+
+- \[\#120\] Search the target files in all directories currently in the code path [\#121](https://github.com/clojerl/rebar3_clojerl/pull/121) ([jfacorro](https://github.com/jfacorro))
+- \[\#118\] Sort files to be compiled [\#119](https://github.com/clojerl/rebar3_clojerl/pull/119) ([jfacorro](https://github.com/jfacorro))
+
+## [0.8.7](https://github.com/clojerl/rebar3_clojerl/tree/0.8.7) (2021-08-07)
 
 [Full Changelog](https://github.com/clojerl/rebar3_clojerl/compare/0.8.6...0.8.7)
 
@@ -18,6 +32,7 @@
 
 **Merged pull requests:**
 
+- Update changelog [\#117](https://github.com/clojerl/rebar3_clojerl/pull/117) ([jfacorro](https://github.com/jfacorro))
 - \[\#14\] Add `--config` flag for the REPL [\#116](https://github.com/clojerl/rebar3_clojerl/pull/116) ([arpunk](https://github.com/arpunk))
 - \[\#114\] Bump versions in templates [\#115](https://github.com/clojerl/rebar3_clojerl/pull/115) ([arpunk](https://github.com/arpunk))
 - \[\#112\] Remove unnecessary mod attribute [\#113](https://github.com/clojerl/rebar3_clojerl/pull/113) ([arpunk](https://github.com/arpunk))
